@@ -5,20 +5,19 @@ use std::sync::{
     Arc,
 };
 use std::time::Instant;
-use windows::core::{Interface, Result as WinResult, ComInterface};
-use windows::Win32::Foundation::{E_ACCESSDENIED, ERROR_ACCESS_DENIED, S_OK};
+use windows::core::Interface;
 use windows::Win32::Graphics::Direct3D::{
-    D3D_DRIVER_TYPE_HARDWARE, D3D_DRIVER_TYPE_UNKNOWN, D3D_FEATURE_LEVEL_11_0,
+    D3D_DRIVER_TYPE_HARDWARE, D3D_FEATURE_LEVEL, D3D_FEATURE_LEVEL_11_0,
 };
 use windows::Win32::Graphics::Direct3D11::{
     D3D11CreateDevice, ID3D11Device, ID3D11DeviceContext, ID3D11Texture2D,
-    D3D11_CPU_ACCESS_READ, D3D11_CREATE_DEVICE_FLAG, D3D11_MAP_READ, D3D11_RESOURCE_MISC_FLAG,
-    D3D11_TEXTURE2D_DESC, D3D11_USAGE_STAGING,
+    D3D11_CPU_ACCESS_READ, D3D11_CREATE_DEVICE_FLAG, D3D11_MAP_READ, D3D11_MAPPED_SUBRESOURCE,
+    D3D11_TEXTURE2D_DESC, D3D11_USAGE_STAGING, D3D11_SDK_VERSION,
 };
 use windows::Win32::Graphics::Dxgi::Common::{DXGI_FORMAT_B8G8R8A8_UNORM, DXGI_SAMPLE_DESC};
 use windows::Win32::Graphics::Dxgi::{
-    CreateDXGIFactory1, IDXGIAdapter1, IDXGIFactory1, IDXGIOutput1, IDXGIOutputDuplication,
-    IDXGIResource, DXGI_ERROR_ACCESS_LOST, DXGI_ERROR_INVALID_CALL, DXGI_ERROR_WAIT_TIMEOUT,
+    IDXGIOutput1, IDXGIOutputDuplication,
+    IDXGIResource, DXGI_ERROR_ACCESS_LOST, DXGI_ERROR_WAIT_TIMEOUT,
     DXGI_OUTDUPL_FRAME_INFO,
 };
 
@@ -37,6 +36,7 @@ impl DxgiCapturer {
             // Initialize D3D11 Device
             let mut device_opt: Option<ID3D11Device> = None;
             let mut context_opt: Option<ID3D11DeviceContext> = None;
+            let mut feature_level: D3D_FEATURE_LEVEL = D3D_FEATURE_LEVEL_11_0;
             
             D3D11CreateDevice(
                 None,
@@ -44,8 +44,9 @@ impl DxgiCapturer {
                 None,
                 D3D11_CREATE_DEVICE_FLAG(0),
                 Some(&[D3D_FEATURE_LEVEL_11_0]),
-                Some(D3D_FEATURE_LEVEL_11_0), // Change to Option or direct depending on signature
+                D3D11_SDK_VERSION,
                 Some(&mut device_opt),
+                Some(&mut feature_level),
                 Some(&mut context_opt),
             ).map_err(|e| CaptureError::Initialization(format!("D3D11CreateDevice failed: {}", e)))?;
 
@@ -59,8 +60,7 @@ impl DxgiCapturer {
             let output = adapter.EnumOutputs(0).map_err(|e| CaptureError::Initialization(format!("EnumOutputs failed: {}", e)))?;
             let output1: IDXGIOutput1 = output.cast().map_err(|e| CaptureError::Initialization(format!("cast to IDXGIOutput1 failed: {}", e)))?;
             
-            let mut desc = Default::default();
-            output1.GetDesc(&mut desc).map_err(|e| CaptureError::Initialization(format!("GetDesc failed: {}", e)))?;
+            let desc = output1.GetDesc().map_err(|e| CaptureError::Initialization(format!("GetDesc failed: {}", e)))?;
             let width = (desc.DesktopCoordinates.right - desc.DesktopCoordinates.left) as u32;
             let height = (desc.DesktopCoordinates.bottom - desc.DesktopCoordinates.top) as u32;
 
@@ -138,8 +138,8 @@ impl VideoCapturer for DxgiCapturer {
                             
                             self.context.CopyResource(&staging, &tex);
                             
-                            let mut mapped = Default::default();
-                            self.context.Map(&staging, 0, D3D11_MAP_READ, 0, &mut mapped)
+                            let mut mapped = D3D11_MAPPED_SUBRESOURCE::default();
+                            self.context.Map(&staging, 0, D3D11_MAP_READ, 0, Some(&mut mapped))
                                 .map_err(|e| CaptureError::StreamError(format!("Map failed: {}", e)))?;
                                 
                             let mut data = Vec::with_capacity((self.width * self.height * 4) as usize);
