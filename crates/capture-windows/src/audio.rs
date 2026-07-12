@@ -6,18 +6,14 @@ use std::sync::{
 };
 use windows::Win32::Media::Audio::{
     eCapture, eConsole, eRender, IAudioCaptureClient, IAudioClient, IMMDeviceEnumerator,
-    MMDeviceEnumerator, AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_EVENTCALLBACK,
-    AUDCLNT_STREAMFLAGS_LOOPBACK,
+    MMDeviceEnumerator, AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_LOOPBACK,
 };
-use windows::Win32::Foundation::WAIT_OBJECT_0;
 use windows::Win32::System::Com::{CoCreateInstance, CoInitializeEx, CLSCTX_ALL, COINIT_MULTITHREADED};
-use windows::Win32::System::Threading::{CreateEventW, WaitForSingleObject};
 
 pub struct WasapiCapturer {
     track: AudioTrack,
     audio_client: IAudioClient,
     capture_client: IAudioCaptureClient,
-    event: windows::Win32::Foundation::HANDLE,
     sample_rate: u32,
     channels: u16,
 }
@@ -59,17 +55,17 @@ impl WasapiCapturer {
             // Free the memory allocated by GetMixFormat
             windows::Win32::System::Com::CoTaskMemFree(Some(mix_format_ptr as *const core::ffi::c_void));
 
-            let mut flags = AUDCLNT_STREAMFLAGS_EVENTCALLBACK;
+            let mut flags = 0;
             if track == AudioTrack::SystemLoopback {
                 flags |= AUDCLNT_STREAMFLAGS_LOOPBACK;
             }
 
-            // Initialize stream
+            // Initialize stream (0 for buffer duration lets WASAPI choose default)
             audio_client
                 .Initialize(
                     AUDCLNT_SHAREMODE_SHARED,
                     flags,
-                    10000000, // 1 second buffer (10,000,000 hns)
+                    0, 
                     0,
                     mix_format_ptr,
                     None,
@@ -77,14 +73,6 @@ impl WasapiCapturer {
                 .map_err(|e| {
                     CaptureError::Initialization(format!("IAudioClient::Initialize failed: {}", e))
                 })?;
-
-            let event = CreateEventW(None, windows::Win32::Foundation::FALSE, windows::Win32::Foundation::FALSE, None).map_err(|e| {
-                CaptureError::Initialization(format!("CreateEvent failed: {}", e))
-            })?;
-
-            audio_client.SetEventHandle(event).map_err(|e| {
-                CaptureError::Initialization(format!("SetEventHandle failed: {}", e))
-            })?;
 
             let capture_client: IAudioCaptureClient = audio_client.GetService().map_err(|e| {
                 CaptureError::Initialization(format!("Failed to get IAudioCaptureClient: {}", e))
@@ -94,7 +82,6 @@ impl WasapiCapturer {
                 track,
                 audio_client,
                 capture_client,
-                event,
                 sample_rate,
                 channels,
             })
@@ -117,10 +104,8 @@ impl AudioCapturer for WasapiCapturer {
             })?;
 
             while !stop.load(Ordering::Relaxed) {
-                let wait_res = WaitForSingleObject(self.event, 100); // 100ms timeout
-                if wait_res != WAIT_OBJECT_0 {
-                    continue;
-                }
+                // Poll every 10ms
+                std::thread::sleep(std::time::Duration::from_millis(10));
 
                 loop {
                     let next_packet_size = self.capture_client.GetNextPacketSize().unwrap_or(0);
