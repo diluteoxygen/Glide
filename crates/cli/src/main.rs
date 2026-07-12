@@ -26,6 +26,12 @@ fn main() {
     info!("Starting Glide CLI (Phase 1 MVP Test Harness)");
     info!("Platform: {}", env::consts::OS);
 
+    let args: Vec<String> = env::args().collect();
+    let dump_frame = args.contains(&"--dump-frame".to_string());
+    if dump_frame {
+        info!("--dump-frame flag detected: will save the first captured frame to dump.png");
+    }
+
     // Initialize the appropriate capturer
     #[cfg(target_os = "windows")]
     let mut capturer = DxgiCapturer::new().expect("Failed to initialize DXGI capturer");
@@ -52,11 +58,33 @@ fn main() {
     let start_time = Instant::now();
     let mut last_log = Instant::now();
 
+    let mut last_received = 0;
+    let mut last_dropped = 0;
+
+    let mut frame_dumped = false;
+
     info!("Running capture for 10 seconds...");
 
     while start_time.elapsed() < run_duration {
-        if let Ok(_frame) = rx.try_recv() {
+        while let Ok(frame) = rx.try_recv() {
             received_frames += 1;
+
+            if dump_frame && !frame_dumped {
+                info!("Dumping first frame to dump.png...");
+                let mut rgba = vec![0u8; frame.data.len()];
+                for (src, dst) in frame.data.chunks_exact(4).zip(rgba.chunks_exact_mut(4)) {
+                    dst[0] = src[2]; // R
+                    dst[1] = src[1]; // G
+                    dst[2] = src[0]; // B
+                    dst[3] = 255;    // A (force opaque)
+                }
+                if let Err(e) = image::save_buffer("dump.png", &rgba, frame.width, frame.height, image::ColorType::Rgba8) {
+                    tracing::error!("Failed to save dump.png: {}", e);
+                } else {
+                    info!("Successfully saved dump.png");
+                }
+                frame_dumped = true;
+            }
         }
 
         // Log stats every second
@@ -69,15 +97,19 @@ fn main() {
             };
 
             let dropped = dropped_frames.load(Ordering::Relaxed);
-            let total = received_frames + dropped;
-            let elapsed_secs = start_time.elapsed().as_secs_f64();
-            let fps = total as f64 / elapsed_secs;
+            let recent_received = received_frames - last_received;
+            let recent_dropped = dropped - last_dropped;
+            let recent_total = recent_received + recent_dropped;
+            let elapsed_secs = last_log.elapsed().as_secs_f64();
+            let fps = recent_total as f64 / elapsed_secs;
 
             info!(
                 "Stats: {:.1} FPS | Received: {} | Dropped: {} | CPU: {:.1}%",
-                fps, received_frames, dropped, cpu_usage
+                fps, recent_received, recent_dropped, cpu_usage
             );
 
+            last_received = received_frames;
+            last_dropped = dropped;
             last_log = Instant::now();
         }
 
