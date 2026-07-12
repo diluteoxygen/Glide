@@ -60,7 +60,7 @@ impl DxgiCapturer {
             let output = adapter.EnumOutputs(0).map_err(|e| CaptureError::Initialization(format!("EnumOutputs failed: {}", e)))?;
             let output1: IDXGIOutput1 = output.cast().map_err(|e| CaptureError::Initialization(format!("cast to IDXGIOutput1 failed: {}", e)))?;
             
-            let desc = output1.GetDesc().map_err(|e| CaptureError::Initialization(format!("GetDesc failed: {}", e)))?;
+            let desc = output.GetDesc().map_err(|e| CaptureError::Initialization(format!("GetDesc failed: {}", e)))?;
             let width = (desc.DesktopCoordinates.right - desc.DesktopCoordinates.left) as u32;
             let height = (desc.DesktopCoordinates.bottom - desc.DesktopCoordinates.top) as u32;
 
