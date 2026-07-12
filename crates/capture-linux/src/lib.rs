@@ -1,5 +1,8 @@
 #![cfg(target_os = "linux")]
 
+pub mod audio;
+pub use audio::PipeWireAudioCapturer;
+
 use capture_core::{CaptureError, Frame, PixelFormat, VideoCapturer};
 use crossbeam_channel::Sender;
 use std::sync::{

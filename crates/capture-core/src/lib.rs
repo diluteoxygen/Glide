@@ -41,3 +41,27 @@ pub trait VideoCapturer {
         dropped_frames: Arc<AtomicU64>,
     ) -> Result<(), CaptureError>;
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AudioTrack {
+    SystemLoopback,
+    Microphone,
+}
+
+pub struct AudioFrame {
+    pub data: Vec<f32>,
+    pub sample_rate: u32,
+    pub channels: u16,
+    pub track: AudioTrack,
+    pub timestamp_us: u64,
+}
+
+pub trait AudioCapturer {
+    /// Starts the audio capture loop on the current thread. Blocks until `stop` is true.
+    /// Pushes captured `AudioFrame`s to `tx`.
+    fn start(
+        &mut self,
+        tx: Sender<AudioFrame>,
+        stop: Arc<AtomicBool>,
+    ) -> Result<(), CaptureError>;
+}

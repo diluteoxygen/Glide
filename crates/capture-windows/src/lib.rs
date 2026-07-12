@@ -1,5 +1,8 @@
 #![cfg(target_os = "windows")]
 
+pub mod audio;
+pub use audio::WasapiCapturer;
+
 use capture_core::{CaptureError, Frame, PixelFormat, VideoCapturer};
 use crossbeam_channel::Sender;
 use std::sync::{

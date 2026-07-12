@@ -1,4 +1,4 @@
-use capture_core::{Frame, VideoCapturer};
+use capture_core::{AudioCapturer, AudioFrame, AudioTrack, Frame, VideoCapturer};
 use crossbeam_channel::bounded;
 use std::env;
 use std::sync::{
@@ -12,10 +12,10 @@ use tracing::{info, Level};
 use tracing_subscriber::FmtSubscriber;
 
 #[cfg(target_os = "windows")]
-use capture_windows::DxgiCapturer;
+use capture_windows::{audio::WasapiCapturer, DxgiCapturer};
 
 #[cfg(target_os = "linux")]
-use capture_linux::PipeWireCapturer;
+use capture_linux::{audio::PipeWireAudioCapturer, PipeWireCapturer};
 
 fn main() {
     let subscriber = FmtSubscriber::builder()
@@ -23,11 +23,116 @@ fn main() {
         .finish();
     tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
 
-    info!("Starting Glide CLI (Phase 1 MVP Test Harness)");
+    info!("Starting Glide CLI");
     info!("Platform: {}", env::consts::OS);
 
     let args: Vec<String> = env::args().collect();
-    let dump_frame = args.contains(&"--dump-frame".to_string());
+    
+    if args.contains(&"--audio-test".to_string()) {
+        run_audio_test();
+    } else {
+        let dump_frame = args.contains(&"--dump-frame".to_string());
+        run_video_test(dump_frame);
+    }
+}
+
+fn run_audio_test() {
+    info!("--- AUDIO TEST ---");
+
+    #[cfg(target_os = "windows")]
+    let (mut sys_cap, mut mic_cap) = (
+        WasapiCapturer::new(AudioTrack::SystemLoopback).expect("Failed to init system audio"),
+        WasapiCapturer::new(AudioTrack::Microphone).expect("Failed to init mic audio")
+    );
+
+    #[cfg(target_os = "linux")]
+    let (mut sys_cap, mut mic_cap) = (
+        PipeWireAudioCapturer::new(AudioTrack::SystemLoopback).expect("Failed to init system audio"),
+        PipeWireAudioCapturer::new(AudioTrack::Microphone).expect("Failed to init mic audio")
+    );
+
+    let (tx, rx) = bounded::<AudioFrame>(100);
+    let stop = Arc::new(AtomicBool::new(false));
+
+    let tx_sys = tx.clone();
+    let stop_sys = Arc::clone(&stop);
+    let sys_thread = thread::spawn(move || sys_cap.start(tx_sys, stop_sys));
+
+    let tx_mic = tx.clone();
+    let stop_mic = Arc::clone(&stop);
+    let mic_thread = thread::spawn(move || mic_cap.start(tx_mic, stop_mic));
+
+    let run_duration = Duration::from_secs(10);
+    let start_time = Instant::now();
+
+    let mut sys_writer = None;
+    let mut mic_writer = None;
+
+    info!("Running audio capture for 10 seconds...");
+
+    let mut sys_frames = 0;
+    let mut mic_frames = 0;
+
+    while start_time.elapsed() < run_duration {
+        while let Ok(frame) = rx.try_recv() {
+            match frame.track {
+                AudioTrack::SystemLoopback => {
+                    let writer = sys_writer.get_or_insert_with(|| {
+                        let spec = hound::WavSpec {
+                            channels: frame.channels,
+                            sample_rate: frame.sample_rate,
+                            bits_per_sample: 32,
+                            sample_format: hound::SampleFormat::Float,
+                        };
+                        hound::WavWriter::create("system.wav", spec).expect("Failed to create system.wav")
+                    });
+                    for &sample in &frame.data {
+                        writer.write_sample(sample).unwrap();
+                    }
+                    sys_frames += 1;
+                }
+                AudioTrack::Microphone => {
+                    let writer = mic_writer.get_or_insert_with(|| {
+                        let spec = hound::WavSpec {
+                            channels: frame.channels,
+                            sample_rate: frame.sample_rate,
+                            bits_per_sample: 32,
+                            sample_format: hound::SampleFormat::Float,
+                        };
+                        hound::WavWriter::create("mic.wav", spec).expect("Failed to create mic.wav")
+                    });
+                    for &sample in &frame.data {
+                        writer.write_sample(sample).unwrap();
+                    }
+                    mic_frames += 1;
+                }
+            }
+        }
+        thread::sleep(Duration::from_millis(10));
+    }
+
+    info!("Signaling stop to audio capture threads...");
+    stop.store(true, Ordering::Relaxed);
+
+    // Drain
+    while rx.try_recv().is_ok() {}
+
+    if let Some(writer) = sys_writer {
+        writer.finalize().unwrap();
+    }
+    if let Some(writer) = mic_writer {
+        writer.finalize().unwrap();
+    }
+
+    let _ = sys_thread.join();
+    let _ = mic_thread.join();
+
+    info!("--- Audio Test Results ---");
+    info!("System Loopback packets written: {}", sys_frames);
+    info!("Microphone packets written:      {}", mic_frames);
+}
+
+fn run_video_test(dump_frame: bool) {
     if dump_frame {
         info!("--dump-frame flag detected: will save the first captured frame to dump.png");
     }
