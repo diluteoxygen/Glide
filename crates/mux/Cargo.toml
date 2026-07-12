@@ -4,3 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+capture-core = { path = "../capture-core" }
+encode = { path = "../encode" }
+crossbeam-channel = "0.5"
+ffmpeg-next = "7.0.3"
+thiserror = "1.0"
+tracing = "0.1"

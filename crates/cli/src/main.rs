@@ -30,10 +30,66 @@ fn main() {
     
     if args.contains(&"--audio-test".to_string()) {
         run_audio_test();
-    } else {
+    } else if args.contains(&"--video-test".to_string()) {
         let dump_frame = args.contains(&"--dump-frame".to_string());
         run_video_test(dump_frame);
+    } else {
+        run_full_pipeline();
     }
+}
+
+fn run_full_pipeline() {
+    info!("--- FULL RECORDING PIPELINE ---");
+
+    #[cfg(target_os = "windows")]
+    let mut vid_cap = DxgiCapturer::new().expect("Failed to initialize DXGI capturer");
+    #[cfg(target_os = "windows")]
+    let (mut sys_cap, mut mic_cap) = (
+        WasapiCapturer::new(AudioTrack::SystemLoopback).expect("Failed to init system audio"),
+        WasapiCapturer::new(AudioTrack::Microphone).expect("Failed to init mic audio")
+    );
+
+    let (tx_vid, rx_vid) = crossbeam_channel::bounded::<Frame>(5);
+    let (tx_sys, rx_sys) = crossbeam_channel::bounded::<AudioFrame>(100);
+    let (tx_mic, rx_mic) = crossbeam_channel::bounded::<AudioFrame>(100);
+    let (tx_mux, rx_mux) = crossbeam_channel::bounded::<encode::EncodedPacket>(1000);
+
+    let stop = Arc::new(AtomicBool::new(false));
+    let dropped_frames = Arc::new(AtomicU64::new(0));
+
+    // Spawn Muxer
+    let muxer = mux::Muxer::new(rx_mux, "output.mkv".to_string()).expect("Failed to init muxer");
+    let stop_mux = Arc::clone(&stop);
+    let mux_thread = thread::spawn(move || muxer.start(stop_mux));
+
+    // Spawn Encoder
+    let encoder = encode::Encoder::new(rx_vid, rx_sys, rx_mic, tx_mux).expect("Failed to init encoder");
+    let stop_enc = Arc::clone(&stop);
+    let enc_thread = thread::spawn(move || encoder.start(stop_enc));
+
+    // Spawn Capturers
+    let stop_vid = Arc::clone(&stop);
+    let vid_thread = thread::spawn(move || vid_cap.start(tx_vid, stop_vid, dropped_frames));
+    
+    let stop_sys = Arc::clone(&stop);
+    let sys_thread = thread::spawn(move || sys_cap.start(tx_sys, stop_sys));
+    
+    let stop_mic = Arc::clone(&stop);
+    let mic_thread = thread::spawn(move || mic_cap.start(tx_mic, stop_mic));
+
+    info!("Recording for 10 seconds...");
+    thread::sleep(Duration::from_secs(10));
+
+    info!("Signaling stop to all threads...");
+    stop.store(true, Ordering::Relaxed);
+
+    vid_thread.join().unwrap().unwrap();
+    sys_thread.join().unwrap().unwrap();
+    mic_thread.join().unwrap().unwrap();
+    enc_thread.join().unwrap().unwrap();
+    mux_thread.join().unwrap().unwrap();
+
+    info!("Full pipeline closed successfully. Output saved to output.mkv");
 }
 
 fn run_audio_test() {
