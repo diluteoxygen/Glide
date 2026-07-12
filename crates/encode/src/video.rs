@@ -1,8 +1,7 @@
 use capture_core::Frame;
 use crossbeam_channel::Sender;
 use ffmpeg_next as ffmpeg;
-use std::collections::HashMap;
-use tracing::{info, warn};
+
 use crate::{EncodeError, EncodedPacket};
 
 pub struct VideoEncoder {
@@ -14,7 +13,7 @@ pub struct VideoEncoder {
 }
 
 impl VideoEncoder {
-    pub fn new(width: u32, height: u32) -> Result<Self, EncodeError> {
+    pub fn new(_width: u32, _height: u32) -> Result<Self, EncodeError> {
         unimplemented!("Phase 3: Context::new_with_codec API removal fix")
     }
 
@@ -25,7 +24,7 @@ impl VideoEncoder {
         tx: &Sender<EncodedPacket>,
     ) -> Result<(), EncodeError> {
         // Create an AVFrame for the raw BGRA data
-        let mut raw_avframe = ffmpeg::frame::Video::empty();
+        let _raw_avframe = ffmpeg::frame::Video::empty();
         let frame_format = ffmpeg::format::Pixel::BGRA;
         
         // Unfortunately, ffmpeg-next Frame::new doesn't easily accept raw bytes for BGRA.

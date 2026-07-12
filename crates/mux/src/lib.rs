@@ -47,9 +47,9 @@ impl Muxer {
         // Actually, MKV allows late headers? No, it's better to add the streams properly.
         // Let's add them as unknown and let `write_interleaved` handle the rest, or just create basic streams.
         {
-            let mut ost_vid = output_ctx.add_stream(ffmpeg::encoder::find(ffmpeg::codec::Id::H264)).unwrap();
-            let mut ost_sys = output_ctx.add_stream(ffmpeg::encoder::find(ffmpeg::codec::Id::AAC)).unwrap();
-            let mut ost_mic = output_ctx.add_stream(ffmpeg::encoder::find(ffmpeg::codec::Id::AAC)).unwrap();
+            let _ost_vid = output_ctx.add_stream(ffmpeg::encoder::find(ffmpeg::codec::Id::H264)).unwrap();
+            let _ost_sys = output_ctx.add_stream(ffmpeg::encoder::find(ffmpeg::codec::Id::AAC)).unwrap();
+            let _ost_mic = output_ctx.add_stream(ffmpeg::encoder::find(ffmpeg::codec::Id::AAC)).unwrap();
         }
 
         output_ctx.write_header().map_err(|e| {
@@ -57,7 +57,7 @@ impl Muxer {
         })?;
 
         while !stop.load(Ordering::Relaxed) {
-            if let Ok(mut enc_pkt) = self.packet_rx.try_recv() {
+            if let Ok(enc_pkt) = self.packet_rx.try_recv() {
                 // Ensure packet's stream index matches what we added
                 // enc_pkt.stream_index is 0, 1, or 2
                 // enc_pkt.packet already has it set, but let's confirm
@@ -70,7 +70,7 @@ impl Muxer {
         }
 
         // Drain any remaining packets in the channel before closing
-        while let Ok(mut enc_pkt) = self.packet_rx.try_recv() {
+        while let Ok(enc_pkt) = self.packet_rx.try_recv() {
             let _ = enc_pkt.packet.write_interleaved(&mut output_ctx);
         }
 

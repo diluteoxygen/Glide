@@ -1,7 +1,7 @@
 use capture_core::AudioFrame;
 use crossbeam_channel::Sender;
 use ffmpeg_next as ffmpeg;
-use tracing::{info, warn};
+
 use crate::{EncodeError, EncodedPacket};
 
 pub struct AudioEncoder {
@@ -15,7 +15,7 @@ pub struct AudioEncoder {
 }
 
 impl AudioEncoder {
-    pub fn new(target_sample_rate: u32, target_channels: u16) -> Result<Self, EncodeError> {
+    pub fn new(_target_sample_rate: u32, _target_channels: u16) -> Result<Self, EncodeError> {
         unimplemented!("Phase 3: Context::new_with_codec API removal fix")
     }
 
