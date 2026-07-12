@@ -16,39 +16,7 @@ pub struct AudioEncoder {
 
 impl AudioEncoder {
     pub fn new(target_sample_rate: u32, target_channels: u16) -> Result<Self, EncodeError> {
-        let codec = ffmpeg::encoder::find(ffmpeg::codec::Id::AAC).ok_or_else(|| {
-            EncodeError::Initialization("AAC encoder not found".to_string())
-        })?;
-
-        let mut ctx = ffmpeg::codec::context::Context::new_with_codec(codec); // TODO(Phase 3): Context::new_with_codec was removed in ffmpeg-next. Update to Context::new() or from_parameters().
-        let mut enc = ctx.encoder().audio().map_err(|e| {
-            EncodeError::Initialization(format!("Failed to get audio encoder context: {}", e))
-        })?;
-
-        enc.set_format(ffmpeg::format::Sample::F32(ffmpeg::format::sample::Type::Packed));
-        enc.set_rate(target_sample_rate as i32);
-        
-        let ch_layout = ffmpeg::util::channel_layout::ChannelLayout::default(target_channels as i32);
-        enc.set_channel_layout(ch_layout);
-        
-        enc.set_time_base((1, target_sample_rate as i32));
-
-        let encoder = enc.open_as(codec).map_err(|e| {
-            EncodeError::Initialization(format!("Failed to open AAC encoder: {}", e))
-        })?;
-
-        // Most AAC encoders use 1024 frames. If frame_size is 0, it means variable, but let's assume 1024.
-        let frame_size = if encoder.frame_size() > 0 { encoder.frame_size() as usize } else { 1024 };
-
-        Ok(Self {
-            encoder,
-            resampler: None,
-            last_sample_rate: 0,
-            last_channels: 0,
-            frame_size,
-            sample_buffer: Vec::new(),
-            pts_counter: 0,
-        })
+        unimplemented!("Phase 3: Context::new_with_codec API removal fix")
     }
 
     pub fn encode(

@@ -15,68 +15,7 @@ pub struct VideoEncoder {
 
 impl VideoEncoder {
     pub fn new(width: u32, height: u32) -> Result<Self, EncodeError> {
-        let codecs_to_try = ["h264_nvenc", "h264_qsv", "h264_amf", "libx264"];
-        let mut codec_opt = None;
-
-        for &c_name in &codecs_to_try {
-            if let Some(codec) = ffmpeg::encoder::find_by_name(c_name) {
-                codec_opt = Some((c_name, codec));
-                break;
-            }
-        }
-
-        let (c_name, codec) = codec_opt.ok_or_else(|| {
-            EncodeError::Initialization("No H.264 encoder found on system".to_string())
-        })?;
-
-        info!("Selected Video Encoder: {}", c_name);
-
-        let mut ctx = ffmpeg::codec::context::Context::new_with_codec(codec); // TODO(Phase 3): Context::new_with_codec was removed in ffmpeg-next. Update to Context::new() or from_parameters().
-        let mut enc = ctx.encoder().video().map_err(|e| {
-            EncodeError::Initialization(format!("Failed to get video encoder context: {}", e))
-        })?;
-
-        enc.set_width(width);
-        enc.set_height(height);
-        enc.set_format(ffmpeg::format::Pixel::NV12);
-        enc.set_time_base((1, 1_000_000)); // microseconds
-        // Add basic parameters for high-performance capture
-        // We avoid b-frames for low latency
-        enc.set_max_b_frames(0);
-
-        let mut dict = ffmpeg::Dictionary::new();
-        if c_name == "h264_nvenc" {
-            dict.set("preset", "p1"); // fastest
-            dict.set("tune", "ull");  // ultra low latency
-        } else if c_name == "libx264" {
-            dict.set("preset", "ultrafast");
-            dict.set("tune", "zerolatency");
-        }
-
-        let encoder = enc.open_with(dict).map_err(|e| {
-            EncodeError::Initialization(format!("Failed to open encoder {}: {}", c_name, e))
-        })?;
-
-        // Setup software scaler (BGRA -> NV12)
-        let scaler = ffmpeg::software::scaling::Context::get(
-            ffmpeg::format::Pixel::BGRA,
-            width,
-            height,
-            ffmpeg::format::Pixel::NV12,
-            width,
-            height,
-            ffmpeg::software::scaling::flag::Flags::FAST_BILINEAR,
-        ).map_err(|e| {
-            EncodeError::Initialization(format!("Failed to create scaler: {}", e))
-        })?;
-
-        Ok(Self {
-            encoder,
-            scaler,
-            frame_index: 0,
-            width,
-            height,
-        })
+        unimplemented!("Phase 3: Context::new_with_codec API removal fix")
     }
 
     pub fn encode(
