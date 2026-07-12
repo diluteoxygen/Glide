@@ -40,7 +40,8 @@ impl Encoder {
         mic_rx: Receiver<AudioFrame>,
         packet_tx: Sender<EncodedPacket>,
     ) -> Result<Self, EncodeError> {
-        ffmpeg::init().map_err(|e| EncodeError::Initialization(format!("FFmpeg init failed: {}", e)))?;
+        ffmpeg::init()
+            .map_err(|e| EncodeError::Initialization(format!("FFmpeg init failed: {}", e)))?;
         Ok(Self {
             video_rx,
             sys_rx,
@@ -66,7 +67,7 @@ impl Encoder {
         };
 
         let mut video_encoder = video::VideoEncoder::new(first_frame.width, first_frame.height)?;
-        
+
         let mut sys_encoder = audio::AudioEncoder::new(48000, 2)?;
         let mut mic_encoder = audio::AudioEncoder::new(48000, 2)?;
 

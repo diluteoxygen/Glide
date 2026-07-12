@@ -8,7 +8,9 @@ use windows::Win32::Media::Audio::{
     eCapture, eConsole, eRender, IAudioCaptureClient, IAudioClient, IMMDeviceEnumerator,
     MMDeviceEnumerator, AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_LOOPBACK,
 };
-use windows::Win32::System::Com::{CoCreateInstance, CoInitializeEx, CLSCTX_ALL, COINIT_MULTITHREADED};
+use windows::Win32::System::Com::{
+    CoCreateInstance, CoInitializeEx, CLSCTX_ALL, COINIT_MULTITHREADED,
+};
 
 pub struct WasapiCapturer {
     track: AudioTrack,
@@ -28,7 +30,10 @@ impl WasapiCapturer {
 
             let enumerator: IMMDeviceEnumerator =
                 CoCreateInstance(&MMDeviceEnumerator, None, CLSCTX_ALL).map_err(|e| {
-                    CaptureError::Initialization(format!("Failed to create device enumerator: {}", e))
+                    CaptureError::Initialization(format!(
+                        "Failed to create device enumerator: {}",
+                        e
+                    ))
                 })?;
 
             let data_flow = match track {
@@ -36,9 +41,14 @@ impl WasapiCapturer {
                 AudioTrack::Microphone => eCapture,
             };
 
-            let device = enumerator.GetDefaultAudioEndpoint(data_flow, eConsole).map_err(|e| {
-                CaptureError::Initialization(format!("Failed to get default audio endpoint: {}", e))
-            })?;
+            let device = enumerator
+                .GetDefaultAudioEndpoint(data_flow, eConsole)
+                .map_err(|e| {
+                    CaptureError::Initialization(format!(
+                        "Failed to get default audio endpoint: {}",
+                        e
+                    ))
+                })?;
 
             let audio_client: IAudioClient = device.Activate(CLSCTX_ALL, None).map_err(|e| {
                 CaptureError::Initialization(format!("Failed to activate IAudioClient: {}", e))
@@ -53,7 +63,9 @@ impl WasapiCapturer {
             let channels = mix_format.nChannels;
 
             // Free the memory allocated by GetMixFormat
-            windows::Win32::System::Com::CoTaskMemFree(Some(mix_format_ptr as *const core::ffi::c_void));
+            windows::Win32::System::Com::CoTaskMemFree(Some(
+                mix_format_ptr as *const core::ffi::c_void,
+            ));
 
             let mut flags = 0;
             if track == AudioTrack::SystemLoopback {
@@ -62,14 +74,7 @@ impl WasapiCapturer {
 
             // Initialize stream (0 for buffer duration lets WASAPI choose default)
             audio_client
-                .Initialize(
-                    AUDCLNT_SHAREMODE_SHARED,
-                    flags,
-                    0, 
-                    0,
-                    mix_format_ptr,
-                    None,
-                )
+                .Initialize(AUDCLNT_SHAREMODE_SHARED, flags, 0, 0, mix_format_ptr, None)
                 .map_err(|e| {
                     CaptureError::Initialization(format!("IAudioClient::Initialize failed: {}", e))
                 })?;
@@ -90,11 +95,7 @@ impl WasapiCapturer {
 }
 
 impl AudioCapturer for WasapiCapturer {
-    fn start(
-        &mut self,
-        tx: Sender<AudioFrame>,
-        stop: Arc<AtomicBool>,
-    ) -> Result<(), CaptureError> {
+    fn start(&mut self, tx: Sender<AudioFrame>, stop: Arc<AtomicBool>) -> Result<(), CaptureError> {
         unsafe {
             // Ensure COM is initialized for the capture thread
             let _ = CoInitializeEx(None, COINIT_MULTITHREADED);
@@ -133,8 +134,9 @@ impl AudioCapturer for WasapiCapturer {
                     if num_frames > 0 {
                         let bytes_per_frame = (self.channels * 4) as usize; // assuming f32 (32-bit float)
                         let byte_count = (num_frames as usize) * bytes_per_frame;
-                        let slice = std::slice::from_raw_parts(p_data as *const f32, byte_count / 4);
-                        
+                        let slice =
+                            std::slice::from_raw_parts(p_data as *const f32, byte_count / 4);
+
                         let data = slice.to_vec();
 
                         let frame = AudioFrame {

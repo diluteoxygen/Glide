@@ -26,7 +26,7 @@ impl VideoEncoder {
         // Create an AVFrame for the raw BGRA data
         let _raw_avframe = ffmpeg::frame::Video::empty();
         let frame_format = ffmpeg::format::Pixel::BGRA;
-        
+
         // Unfortunately, ffmpeg-next Frame::new doesn't easily accept raw bytes for BGRA.
         // We create a new one, then manually fill data.
         let mut raw_avframe = ffmpeg::frame::Video::new(frame_format, self.width, self.height);
@@ -45,9 +45,9 @@ impl VideoEncoder {
         }
 
         let mut nv12_avframe = ffmpeg::frame::Video::empty();
-        self.scaler.run(&raw_avframe, &mut nv12_avframe).map_err(|e| {
-            EncodeError::Encoding(format!("Scaler failed: {}", e))
-        })?;
+        self.scaler
+            .run(&raw_avframe, &mut nv12_avframe)
+            .map_err(|e| EncodeError::Encoding(format!("Scaler failed: {}", e)))?;
 
         nv12_avframe.set_pts(Some(frame.timestamp_us as i64));
 
@@ -61,21 +61,35 @@ impl VideoEncoder {
         Ok(())
     }
 
-    pub fn flush(&mut self, stream_index: usize, tx: &Sender<EncodedPacket>) -> Result<(), EncodeError> {
-        self.encoder.send_eof().map_err(|e| {
-            EncodeError::Encoding(format!("Failed to send EOF: {}", e))
-        })?;
+    pub fn flush(
+        &mut self,
+        stream_index: usize,
+        tx: &Sender<EncodedPacket>,
+    ) -> Result<(), EncodeError> {
+        self.encoder
+            .send_eof()
+            .map_err(|e| EncodeError::Encoding(format!("Failed to send EOF: {}", e)))?;
         self.receive_and_send(stream_index, tx)?;
         Ok(())
     }
 
-    fn receive_and_send(&mut self, stream_index: usize, tx: &Sender<EncodedPacket>) -> Result<(), EncodeError> {
+    fn receive_and_send(
+        &mut self,
+        stream_index: usize,
+        tx: &Sender<EncodedPacket>,
+    ) -> Result<(), EncodeError> {
         let mut packet = ffmpeg::Packet::empty();
         while self.encoder.receive_packet(&mut packet).is_ok() {
             // Need to create a new packet instance or clone, because `packet` is reused
             let mut p = packet.clone();
             p.set_stream(stream_index);
-            if tx.send(EncodedPacket { stream_index, packet: p }).is_err() {
+            if tx
+                .send(EncodedPacket {
+                    stream_index,
+                    packet: p,
+                })
+                .is_err()
+            {
                 break;
             }
         }

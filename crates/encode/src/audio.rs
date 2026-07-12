@@ -27,7 +27,8 @@ impl AudioEncoder {
     ) -> Result<(), EncodeError> {
         // Recreate resampler if input format changes
         if self.last_sample_rate != frame.sample_rate || self.last_channels != frame.channels {
-            let in_layout = ffmpeg::util::channel_layout::ChannelLayout::default(frame.channels as i32);
+            let in_layout =
+                ffmpeg::util::channel_layout::ChannelLayout::default(frame.channels as i32);
             let out_layout = self.encoder.channel_layout();
             let in_fmt = ffmpeg::format::Sample::F32(ffmpeg::format::sample::Type::Packed);
             let out_fmt = ffmpeg::format::Sample::F32(ffmpeg::format::sample::Type::Packed);
@@ -39,7 +40,8 @@ impl AudioEncoder {
                 out_fmt,
                 out_layout,
                 self.encoder.rate(),
-            ).map_err(|e| {
+            )
+            .map_err(|e| {
                 EncodeError::Initialization(format!("Failed to create audio resampler: {}", e))
             })?;
 
@@ -49,23 +51,23 @@ impl AudioEncoder {
         }
 
         let num_samples = frame.data.len() / (frame.channels as usize);
-        
+
         let mut in_frame = ffmpeg::frame::Audio::new(
             ffmpeg::format::Sample::F32(ffmpeg::format::sample::Type::Packed),
             num_samples,
             ffmpeg::util::channel_layout::ChannelLayout::default(frame.channels as i32),
         );
         in_frame.set_rate(frame.sample_rate);
-        
+
         let in_data = in_frame.data_mut(0);
         let src_bytes = bytemuck::cast_slice(&frame.data);
         in_data[..src_bytes.len()].copy_from_slice(src_bytes);
 
         let mut resampled_frame = ffmpeg::frame::Audio::empty();
         if let Some(resampler) = &mut self.resampler {
-            resampler.run(&in_frame, &mut resampled_frame).map_err(|e| {
-                EncodeError::Encoding(format!("Resampler failed: {}", e))
-            })?;
+            resampler
+                .run(&in_frame, &mut resampled_frame)
+                .map_err(|e| EncodeError::Encoding(format!("Resampler failed: {}", e)))?;
         } else {
             resampled_frame = in_frame;
         }
@@ -80,7 +82,7 @@ impl AudioEncoder {
 
         while self.sample_buffer.len() >= floats_per_frame {
             let chunk: Vec<f32> = self.sample_buffer.drain(..floats_per_frame).collect();
-            
+
             let mut out_frame = ffmpeg::frame::Audio::new(
                 ffmpeg::format::Sample::F32(ffmpeg::format::sample::Type::Packed),
                 self.frame_size,
@@ -89,7 +91,7 @@ impl AudioEncoder {
             out_frame.set_rate(self.encoder.rate());
             out_frame.set_pts(Some(self.pts_counter));
             self.pts_counter += self.frame_size as i64;
-            
+
             let out_data_mut = out_frame.data_mut(0);
             out_data_mut.copy_from_slice(bytemuck::cast_slice(&chunk));
 
@@ -103,20 +105,34 @@ impl AudioEncoder {
         Ok(())
     }
 
-    pub fn flush(&mut self, stream_index: usize, tx: &Sender<EncodedPacket>) -> Result<(), EncodeError> {
-        self.encoder.send_eof().map_err(|e| {
-            EncodeError::Encoding(format!("Failed to send EOF: {}", e))
-        })?;
+    pub fn flush(
+        &mut self,
+        stream_index: usize,
+        tx: &Sender<EncodedPacket>,
+    ) -> Result<(), EncodeError> {
+        self.encoder
+            .send_eof()
+            .map_err(|e| EncodeError::Encoding(format!("Failed to send EOF: {}", e)))?;
         self.receive_and_send(stream_index, tx)?;
         Ok(())
     }
 
-    fn receive_and_send(&mut self, stream_index: usize, tx: &Sender<EncodedPacket>) -> Result<(), EncodeError> {
+    fn receive_and_send(
+        &mut self,
+        stream_index: usize,
+        tx: &Sender<EncodedPacket>,
+    ) -> Result<(), EncodeError> {
         let mut packet = ffmpeg::Packet::empty();
         while self.encoder.receive_packet(&mut packet).is_ok() {
             let mut p = packet.clone();
             p.set_stream(stream_index);
-            if tx.send(EncodedPacket { stream_index, packet: p }).is_err() {
+            if tx
+                .send(EncodedPacket {
+                    stream_index,
+                    packet: p,
+                })
+                .is_err()
+            {
                 break;
             }
         }

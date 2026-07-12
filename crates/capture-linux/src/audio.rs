@@ -18,16 +18,12 @@ impl PipeWireAudioCapturer {
 }
 
 impl AudioCapturer for PipeWireAudioCapturer {
-    fn start(
-        &mut self,
-        tx: Sender<AudioFrame>,
-        stop: Arc<AtomicBool>,
-    ) -> Result<(), CaptureError> {
+    fn start(&mut self, tx: Sender<AudioFrame>, stop: Arc<AtomicBool>) -> Result<(), CaptureError> {
         let start_time = Instant::now();
-        
+
         while !stop.load(Ordering::Relaxed) {
             std::thread::sleep(std::time::Duration::from_millis(20)); // ~50 updates per second
-            
+
             let frame = AudioFrame {
                 data: vec![0.0; 480], // Dummy audio data
                 sample_rate: 48000,
@@ -35,12 +31,12 @@ impl AudioCapturer for PipeWireAudioCapturer {
                 track: self.track,
                 timestamp_us: start_time.elapsed().as_micros() as u64,
             };
-            
+
             if tx.send(frame).is_err() {
                 break;
             }
         }
-        
+
         Ok(())
     }
 }

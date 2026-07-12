@@ -27,7 +27,7 @@ fn main() {
     info!("Platform: {}", env::consts::OS);
 
     let args: Vec<String> = env::args().collect();
-    
+
     if args.contains(&"--audio-test".to_string()) {
         run_audio_test();
     } else if args.contains(&"--video-test".to_string()) {
@@ -46,15 +46,16 @@ fn run_full_pipeline() {
     #[cfg(target_os = "windows")]
     let (mut sys_cap, mut mic_cap) = (
         WasapiCapturer::new(AudioTrack::SystemLoopback).expect("Failed to init system audio"),
-        WasapiCapturer::new(AudioTrack::Microphone).expect("Failed to init mic audio")
+        WasapiCapturer::new(AudioTrack::Microphone).expect("Failed to init mic audio"),
     );
 
     #[cfg(target_os = "linux")]
     let mut vid_cap = PipeWireCapturer::new().expect("Failed to initialize PipeWire capturer");
     #[cfg(target_os = "linux")]
     let (mut sys_cap, mut mic_cap) = (
-        PipeWireAudioCapturer::new(AudioTrack::SystemLoopback).expect("Failed to init system audio"),
-        PipeWireAudioCapturer::new(AudioTrack::Microphone).expect("Failed to init mic audio")
+        PipeWireAudioCapturer::new(AudioTrack::SystemLoopback)
+            .expect("Failed to init system audio"),
+        PipeWireAudioCapturer::new(AudioTrack::Microphone).expect("Failed to init mic audio"),
     );
 
     let (tx_vid, rx_vid) = crossbeam_channel::bounded::<Frame>(5);
@@ -71,17 +72,18 @@ fn run_full_pipeline() {
     let mux_thread = thread::spawn(move || muxer.start(stop_mux));
 
     // Spawn Encoder
-    let encoder = encode::Encoder::new(rx_vid, rx_sys, rx_mic, tx_mux).expect("Failed to init encoder");
+    let encoder =
+        encode::Encoder::new(rx_vid, rx_sys, rx_mic, tx_mux).expect("Failed to init encoder");
     let stop_enc = Arc::clone(&stop);
     let enc_thread = thread::spawn(move || encoder.start(stop_enc));
 
     // Spawn Capturers
     let stop_vid = Arc::clone(&stop);
     let vid_thread = thread::spawn(move || vid_cap.start(tx_vid, stop_vid, dropped_frames));
-    
+
     let stop_sys = Arc::clone(&stop);
     let sys_thread = thread::spawn(move || sys_cap.start(tx_sys, stop_sys));
-    
+
     let stop_mic = Arc::clone(&stop);
     let mic_thread = thread::spawn(move || mic_cap.start(tx_mic, stop_mic));
 
@@ -106,13 +108,14 @@ fn run_audio_test() {
     #[cfg(target_os = "windows")]
     let (mut sys_cap, mut mic_cap) = (
         WasapiCapturer::new(AudioTrack::SystemLoopback).expect("Failed to init system audio"),
-        WasapiCapturer::new(AudioTrack::Microphone).expect("Failed to init mic audio")
+        WasapiCapturer::new(AudioTrack::Microphone).expect("Failed to init mic audio"),
     );
 
     #[cfg(target_os = "linux")]
     let (mut sys_cap, mut mic_cap) = (
-        PipeWireAudioCapturer::new(AudioTrack::SystemLoopback).expect("Failed to init system audio"),
-        PipeWireAudioCapturer::new(AudioTrack::Microphone).expect("Failed to init mic audio")
+        PipeWireAudioCapturer::new(AudioTrack::SystemLoopback)
+            .expect("Failed to init system audio"),
+        PipeWireAudioCapturer::new(AudioTrack::Microphone).expect("Failed to init mic audio"),
     );
 
     let (tx, rx) = bounded::<AudioFrame>(100);
@@ -148,7 +151,8 @@ fn run_audio_test() {
                             bits_per_sample: 32,
                             sample_format: hound::SampleFormat::Float,
                         };
-                        hound::WavWriter::create("system.wav", spec).expect("Failed to create system.wav")
+                        hound::WavWriter::create("system.wav", spec)
+                            .expect("Failed to create system.wav")
                     });
                     for &sample in &frame.data {
                         writer.write_sample(sample).unwrap();
@@ -245,9 +249,15 @@ fn run_video_test(dump_frame: bool) {
                     dst[0] = src[2]; // R
                     dst[1] = src[1]; // G
                     dst[2] = src[0]; // B
-                    dst[3] = 255;    // A (force opaque)
+                    dst[3] = 255; // A (force opaque)
                 }
-                if let Err(e) = image::save_buffer("dump.png", &rgba, frame.width, frame.height, image::ColorType::Rgba8) {
+                if let Err(e) = image::save_buffer(
+                    "dump.png",
+                    &rgba,
+                    frame.width,
+                    frame.height,
+                    image::ColorType::Rgba8,
+                ) {
                     tracing::error!("Failed to save dump.png: {}", e);
                 } else {
                     info!("Successfully saved dump.png");

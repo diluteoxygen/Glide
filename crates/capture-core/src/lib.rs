@@ -59,9 +59,5 @@ pub struct AudioFrame {
 pub trait AudioCapturer {
     /// Starts the audio capture loop on the current thread. Blocks until `stop` is true.
     /// Pushes captured `AudioFrame`s to `tx`.
-    fn start(
-        &mut self,
-        tx: Sender<AudioFrame>,
-        stop: Arc<AtomicBool>,
-    ) -> Result<(), CaptureError>;
+    fn start(&mut self, tx: Sender<AudioFrame>, stop: Arc<AtomicBool>) -> Result<(), CaptureError>;
 }
