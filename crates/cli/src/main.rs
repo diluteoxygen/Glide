@@ -1,4 +1,4 @@
-use capture_core::{VideoCapturer, Frame};
+use capture_core::{Frame, VideoCapturer};
 use crossbeam_channel::bounded;
 use std::env;
 use std::sync::{
@@ -39,16 +39,14 @@ fn main() {
 
     let stop_clone = Arc::clone(&stop);
     let dropped_clone = Arc::clone(&dropped_frames);
-    
+
     // Spawn capture thread
-    let capture_thread = thread::spawn(move || {
-        capturer.start(tx, stop_clone, dropped_clone)
-    });
+    let capture_thread = thread::spawn(move || capturer.start(tx, stop_clone, dropped_clone));
 
     // Initialize sysinfo to monitor CPU usage
     let mut sys = System::new_all();
     let pid = sysinfo::get_current_pid().expect("Failed to get current PID");
-    
+
     let mut received_frames = 0;
     let run_duration = Duration::from_secs(10);
     let start_time = Instant::now();
@@ -88,7 +86,7 @@ fn main() {
 
     info!("Signaling stop to capture thread...");
     stop.store(true, Ordering::Relaxed);
-    
+
     // Drain channel to unblock capturer if it's waiting on a full channel
     while rx.try_recv().is_ok() {}
 

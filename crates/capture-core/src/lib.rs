@@ -1,5 +1,8 @@
 use crossbeam_channel::Sender;
-use std::sync::{atomic::{AtomicBool, AtomicU64}, Arc};
+use std::sync::{
+    atomic::{AtomicBool, AtomicU64},
+    Arc,
+};
 use thiserror::Error;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -29,7 +32,7 @@ pub enum CaptureError {
 pub trait VideoCapturer {
     /// Starts the capture loop on the current thread. Blocks until `stop` is true.
     /// Pushes captured `Frame`s to `tx`. Drops frames if `tx` is full.
-    /// 
+    ///
     /// Increments `dropped_frames` counter if `tx.try_send` fails.
     fn start(
         &mut self,

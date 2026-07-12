@@ -30,10 +30,10 @@ impl VideoCapturer for PipeWireCapturer {
         dropped_frames: Arc<AtomicU64>,
     ) -> Result<(), CaptureError> {
         let start_time = Instant::now();
-        
+
         while !stop.load(Ordering::Relaxed) {
             std::thread::sleep(std::time::Duration::from_millis(16)); // ~60 FPS
-            
+
             let frame = Frame {
                 data: vec![0; 1920 * 1080 * 4],
                 format: PixelFormat::Bgra,
@@ -41,12 +41,12 @@ impl VideoCapturer for PipeWireCapturer {
                 height: 1080,
                 timestamp_us: start_time.elapsed().as_micros() as u64,
             };
-            
+
             if tx.try_send(frame).is_err() {
                 dropped_frames.fetch_add(1, Ordering::Relaxed);
             }
         }
-        
+
         Ok(())
     }
 }
