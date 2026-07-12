@@ -8,3 +8,6 @@ members = [
     "crates/mux",
     "crates/cli",
 ]
+
+[patch.crates-io]
+ffmpeg-sys-next = { path = "crates/ffmpeg-sys-next" }

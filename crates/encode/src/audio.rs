@@ -20,7 +20,7 @@ impl AudioEncoder {
             EncodeError::Initialization("AAC encoder not found".to_string())
         })?;
 
-        let mut ctx = ffmpeg::codec::context::Context::new_with_codec(codec);
+        let mut ctx = ffmpeg::codec::context::Context::new_with_codec(codec); // TODO(Phase 3): Context::new_with_codec was removed in ffmpeg-next. Update to Context::new() or from_parameters().
         let mut enc = ctx.encoder().audio().map_err(|e| {
             EncodeError::Initialization(format!("Failed to get audio encoder context: {}", e))
         })?;

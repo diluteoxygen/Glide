@@ -31,7 +31,7 @@ impl VideoEncoder {
 
         info!("Selected Video Encoder: {}", c_name);
 
-        let mut ctx = ffmpeg::codec::context::Context::new_with_codec(codec);
+        let mut ctx = ffmpeg::codec::context::Context::new_with_codec(codec); // TODO(Phase 3): Context::new_with_codec was removed in ffmpeg-next. Update to Context::new() or from_parameters().
         let mut enc = ctx.encoder().video().map_err(|e| {
             EncodeError::Initialization(format!("Failed to get video encoder context: {}", e))
         })?;
