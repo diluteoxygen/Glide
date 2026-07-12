@@ -49,6 +49,14 @@ fn run_full_pipeline() {
         WasapiCapturer::new(AudioTrack::Microphone).expect("Failed to init mic audio")
     );
 
+    #[cfg(target_os = "linux")]
+    let mut vid_cap = PipeWireCapturer::new().expect("Failed to initialize PipeWire capturer");
+    #[cfg(target_os = "linux")]
+    let (mut sys_cap, mut mic_cap) = (
+        PipeWireAudioCapturer::new(AudioTrack::SystemLoopback).expect("Failed to init system audio"),
+        PipeWireAudioCapturer::new(AudioTrack::Microphone).expect("Failed to init mic audio")
+    );
+
     let (tx_vid, rx_vid) = crossbeam_channel::bounded::<Frame>(5);
     let (tx_sys, rx_sys) = crossbeam_channel::bounded::<AudioFrame>(100);
     let (tx_mic, rx_mic) = crossbeam_channel::bounded::<AudioFrame>(100);
