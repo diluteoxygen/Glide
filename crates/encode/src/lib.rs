@@ -26,11 +26,21 @@ pub struct EncodedPacket {
     pub packet: ffmpeg::Packet,
 }
 
+pub struct CodecParameters {
+    pub video: ffmpeg::codec::Parameters,
+    pub video_time_base: ffmpeg::Rational,
+    pub audio_sys: ffmpeg::codec::Parameters,
+    pub audio_sys_time_base: ffmpeg::Rational,
+    pub audio_mic: ffmpeg::codec::Parameters,
+    pub audio_mic_time_base: ffmpeg::Rational,
+}
+
 pub struct Encoder {
     video_rx: Receiver<Frame>,
     sys_rx: Receiver<AudioFrame>,
     mic_rx: Receiver<AudioFrame>,
     packet_tx: Sender<EncodedPacket>,
+    params_tx: Sender<CodecParameters>,
 }
 
 impl Encoder {
@@ -39,6 +49,7 @@ impl Encoder {
         sys_rx: Receiver<AudioFrame>,
         mic_rx: Receiver<AudioFrame>,
         packet_tx: Sender<EncodedPacket>,
+        params_tx: Sender<CodecParameters>,
     ) -> Result<Self, EncodeError> {
         ffmpeg::init()
             .map_err(|e| EncodeError::Initialization(format!("FFmpeg init failed: {}", e)))?;
@@ -47,6 +58,7 @@ impl Encoder {
             sys_rx,
             mic_rx,
             packet_tx,
+            params_tx,
         })
     }
 
@@ -75,6 +87,20 @@ impl Encoder {
         let video_stream_idx = 0;
         let sys_stream_idx = 1;
         let mic_stream_idx = 2;
+
+        let codec_params = CodecParameters {
+            video: (&video_encoder.encoder).into(),
+            video_time_base: video_encoder.time_base,
+            audio_sys: (&sys_encoder.encoder).into(),
+            audio_sys_time_base: sys_encoder.time_base,
+            audio_mic: (&mic_encoder.encoder).into(),
+            audio_mic_time_base: mic_encoder.time_base,
+        };
+
+        if self.params_tx.send(codec_params).is_err() {
+            error!("Failed to send codec parameters to muxer");
+            return Ok(());
+        }
 
         // Encode the first frame
         if let Err(e) = video_encoder.encode(first_frame, video_stream_idx, &self.packet_tx) {

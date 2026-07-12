@@ -5,18 +5,57 @@ use ffmpeg_next as ffmpeg;
 use crate::{EncodeError, EncodedPacket};
 
 pub struct AudioEncoder {
-    encoder: ffmpeg::codec::encoder::audio::Encoder,
+    pub(crate) encoder: ffmpeg::codec::encoder::audio::Encoder,
     resampler: Option<ffmpeg::software::resampling::Context>,
     last_sample_rate: u32,
     last_channels: u16,
     frame_size: usize,
-    sample_buffer: Vec<f32>,
+    /// Per-channel sample buffers. sample_buffers[ch] holds f32 samples for that channel.
+    sample_buffers: Vec<Vec<f32>>,
     pts_counter: i64,
+    pub(crate) time_base: ffmpeg::Rational,
+    out_channels: usize,
 }
 
 impl AudioEncoder {
-    pub fn new(_target_sample_rate: u32, _target_channels: u16) -> Result<Self, EncodeError> {
-        unimplemented!("Phase 3: Context::new_with_codec API removal fix")
+    pub fn new(target_sample_rate: u32, target_channels: u16) -> Result<Self, EncodeError> {
+        let codec = ffmpeg::encoder::find(ffmpeg::codec::Id::AAC)
+            .ok_or_else(|| EncodeError::Initialization("AAC codec not found".into()))?;
+
+        let context = ffmpeg::codec::context::Context::new();
+        let mut encoder = context
+            .encoder()
+            .audio()
+            .map_err(|e| EncodeError::Initialization(format!("Failed to create audio context: {}", e)))?;
+
+        encoder.set_rate(target_sample_rate as i32);
+        let channel_layout = ffmpeg::util::channel_layout::ChannelLayout::default(target_channels as i32);
+        encoder.set_channel_layout(channel_layout);
+        encoder.set_channels(channel_layout.channels());
+        // AAC strictly requires FLTP (Float Planar)
+        encoder.set_format(ffmpeg::format::Sample::F32(ffmpeg::format::sample::Type::Planar));
+        encoder.set_bit_rate(128_000);
+        let time_base = ffmpeg::Rational(1, target_sample_rate as i32);
+        encoder.set_time_base(time_base);
+
+        let encoder = encoder
+            .open_as(codec)
+            .map_err(|e| EncodeError::Initialization(format!("Failed to open AAC encoder: {}", e)))?;
+
+        let frame_size = encoder.frame_size() as usize;
+        let out_channels = encoder.channels() as usize;
+
+        Ok(Self {
+            encoder,
+            resampler: None,
+            last_sample_rate: 0,
+            last_channels: 0,
+            frame_size,
+            sample_buffers: (0..out_channels).map(|_| Vec::new()).collect(),
+            pts_counter: 0,
+            time_base,
+            out_channels,
+        })
     }
 
     pub fn encode(
@@ -31,7 +70,7 @@ impl AudioEncoder {
                 ffmpeg::util::channel_layout::ChannelLayout::default(frame.channels as i32);
             let out_layout = self.encoder.channel_layout();
             let in_fmt = ffmpeg::format::Sample::F32(ffmpeg::format::sample::Type::Packed);
-            let out_fmt = ffmpeg::format::Sample::F32(ffmpeg::format::sample::Type::Packed);
+            let out_fmt = self.encoder.format();
 
             let resampler = ffmpeg::software::resampling::Context::get(
                 in_fmt,
@@ -72,28 +111,37 @@ impl AudioEncoder {
             resampled_frame = in_frame;
         }
 
-        // Push to buffer
-        let out_data = resampled_frame.data(0);
-        let out_floats: &[f32] = bytemuck::cast_slice(out_data);
-        self.sample_buffer.extend_from_slice(out_floats);
+        // The resampled frame is in planar format: each channel is a separate plane.
+        // Read each plane and push to the corresponding per-channel buffer.
+        for ch in 0..self.out_channels {
+            // Use strongly-typed `plane::<f32>(ch)` which computes size based on nb_samples
+            // instead of data(ch) which incorrectly uses linesize[ch] that might be 0.
+            let plane_floats = resampled_frame.plane::<f32>(ch);
+            if !plane_floats.is_empty() {
+                self.sample_buffers[ch].extend_from_slice(plane_floats);
+            }
+        }
 
-        let channels = self.encoder.channels() as usize;
-        let floats_per_frame = self.frame_size * channels;
-
-        while self.sample_buffer.len() >= floats_per_frame {
-            let chunk: Vec<f32> = self.sample_buffer.drain(..floats_per_frame).collect();
-
+        // Build output frames once we have enough samples in every channel
+        while self.sample_buffers[0].len() >= self.frame_size {
             let mut out_frame = ffmpeg::frame::Audio::new(
-                ffmpeg::format::Sample::F32(ffmpeg::format::sample::Type::Packed),
+                self.encoder.format(),
                 self.frame_size,
                 self.encoder.channel_layout(),
             );
+            // Explicitly set channels because Audio::new only sets channel_layout, 
+            // which FFmpeg 6.0+ might misinterpret without channels explicitly set.
+            out_frame.set_channels(self.out_channels as u16);
             out_frame.set_rate(self.encoder.rate());
             out_frame.set_pts(Some(self.pts_counter));
             self.pts_counter += self.frame_size as i64;
 
-            let out_data_mut = out_frame.data_mut(0);
-            out_data_mut.copy_from_slice(bytemuck::cast_slice(&chunk));
+            // Write each channel's samples to its plane
+            for ch in 0..self.out_channels {
+                let samples: Vec<f32> = self.sample_buffers[ch].drain(..self.frame_size).collect();
+                let plane = out_frame.plane_mut::<f32>(ch);
+                plane[..samples.len()].copy_from_slice(&samples);
+            }
 
             self.encoder.send_frame(&out_frame).map_err(|e| {
                 EncodeError::Encoding(format!("Encoder failed to receive frame: {}", e))
@@ -139,3 +187,4 @@ impl AudioEncoder {
         Ok(())
     }
 }
+

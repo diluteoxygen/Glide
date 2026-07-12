@@ -62,18 +62,18 @@ fn run_full_pipeline() {
     let (tx_sys, rx_sys) = crossbeam_channel::bounded::<AudioFrame>(100);
     let (tx_mic, rx_mic) = crossbeam_channel::bounded::<AudioFrame>(100);
     let (tx_mux, rx_mux) = crossbeam_channel::bounded::<encode::EncodedPacket>(1000);
+    let (tx_params, rx_params) = crossbeam_channel::bounded::<encode::CodecParameters>(1);
 
     let stop = Arc::new(AtomicBool::new(false));
     let dropped_frames = Arc::new(AtomicU64::new(0));
 
     // Spawn Muxer
-    let muxer = mux::Muxer::new(rx_mux, "output.mkv".to_string()).expect("Failed to init muxer");
+    let muxer = mux::Muxer::new(rx_mux, rx_params, "output.mkv".to_string()).expect("Failed to init muxer");
     let stop_mux = Arc::clone(&stop);
     let mux_thread = thread::spawn(move || muxer.start(stop_mux));
 
     // Spawn Encoder
-    let encoder =
-        encode::Encoder::new(rx_vid, rx_sys, rx_mic, tx_mux).expect("Failed to init encoder");
+    let encoder = encode::Encoder::new(rx_vid, rx_sys, rx_mic, tx_mux, tx_params).expect("Failed to init encoder");
     let stop_enc = Arc::clone(&stop);
     let enc_thread = thread::spawn(move || encoder.start(stop_enc));
 

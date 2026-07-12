@@ -62,10 +62,6 @@ impl WasapiCapturer {
             let sample_rate = mix_format.nSamplesPerSec;
             let channels = mix_format.nChannels;
 
-            // Free the memory allocated by GetMixFormat
-            windows::Win32::System::Com::CoTaskMemFree(Some(
-                mix_format_ptr as *const core::ffi::c_void,
-            ));
 
             let mut flags = 0;
             if track == AudioTrack::SystemLoopback {
@@ -73,11 +69,17 @@ impl WasapiCapturer {
             }
 
             // Initialize stream (0 for buffer duration lets WASAPI choose default)
-            audio_client
-                .Initialize(AUDCLNT_SHAREMODE_SHARED, flags, 0, 0, mix_format_ptr, None)
-                .map_err(|e| {
-                    CaptureError::Initialization(format!("IAudioClient::Initialize failed: {}", e))
-                })?;
+            let init_result = audio_client
+                .Initialize(AUDCLNT_SHAREMODE_SHARED, flags, 0, 0, mix_format_ptr, None);
+
+            // Free the memory allocated by GetMixFormat
+            windows::Win32::System::Com::CoTaskMemFree(Some(
+                mix_format_ptr as *const core::ffi::c_void,
+            ));
+
+            init_result.map_err(|e| {
+                CaptureError::Initialization(format!("IAudioClient::Initialize failed: {}", e))
+            })?;
 
             let capture_client: IAudioCaptureClient = audio_client.GetService().map_err(|e| {
                 CaptureError::Initialization(format!("Failed to get IAudioCaptureClient: {}", e))

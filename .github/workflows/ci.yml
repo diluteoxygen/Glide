@@ -36,12 +36,20 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libpipewire-0.3-dev libavcodec-dev libavformat-dev libavutil-dev libavdevice-dev libavfilter-dev libswscale-dev libswresample-dev clang pkg-config
         
-    - name: Install Windows dependencies (vcpkg)
+    - name: Setup vcpkg and install dependencies
+      if: runner.os == 'Windows'
+      uses: lukka/run-vcpkg@v11
+      with:
+        vcpkgDirectory: '${{ github.workspace }}/vcpkg'
+        vcpkgGitCommitId: '5e5d0e1cd7785623065e7713fcce07022cae57ae' # or appropriate commit
+        runVcpkgInstall: true
+        vcpkgJsonGlob: '**/vcpkg.json'
+
+    - name: Create vcpkg_installed Junction
       if: runner.os == 'Windows'
       run: |
-        vcpkg install --triplet x64-windows
-        New-Item -ItemType Junction -Path "$env:VCPKG_INSTALLATION_ROOT\installed" -Target "$env:GITHUB_WORKSPACE\vcpkg_installed" -Force
-        echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" >> $env:GITHUB_ENV
+        New-Item -ItemType Junction -Path "$env:GITHUB_WORKSPACE\vcpkg\installed" -Target "$env:GITHUB_WORKSPACE\vcpkg_installed" -Force
+        echo "VCPKG_ROOT=$env:GITHUB_WORKSPACE\vcpkg" >> $env:GITHUB_ENV
     - name: Build Workspace
       run: cargo build --workspace > build.log 2>&1
       

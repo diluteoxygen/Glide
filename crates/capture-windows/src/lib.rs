@@ -226,10 +226,11 @@ impl VideoCapturer for DxgiCapturer {
                             frame_count += 1;
                             if frame_count == 100 {
                                 tracing::info!(
-                                    "Profile (100 frames): Acquire: {:?}, Copy: {:?}, Map/Copy/Unmap: {:?}",
+                                    "Profile (100 frames): Acquire: {:?}, Copy: {:?}, Map/Copy/Unmap: {:?}, Dropped Total: {}",
                                     total_acquire / 100,
                                     total_copy / 100,
-                                    total_map / 100
+                                    total_map / 100,
+                                    dropped_frames.load(Ordering::Relaxed)
                                 );
                                 frame_count = 0;
                                 total_acquire = std::time::Duration::ZERO;

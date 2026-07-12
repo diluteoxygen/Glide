@@ -5,16 +5,96 @@ use ffmpeg_next as ffmpeg;
 use crate::{EncodeError, EncodedPacket};
 
 pub struct VideoEncoder {
-    encoder: ffmpeg::codec::encoder::video::Encoder,
+    pub(crate) encoder: ffmpeg::codec::encoder::video::Encoder,
     scaler: ffmpeg::software::scaling::Context,
     frame_index: i64,
     width: u32,
     height: u32,
+    pub(crate) time_base: ffmpeg::Rational,
 }
 
 impl VideoEncoder {
-    pub fn new(_width: u32, _height: u32) -> Result<Self, EncodeError> {
-        unimplemented!("Phase 3: Context::new_with_codec API removal fix")
+    pub fn new(width: u32, height: u32) -> Result<Self, EncodeError> {
+        let encoder_names = [
+            "h264_nvenc",
+            "h264_qsv",
+            "h264_amf",
+            "h264_vaapi",
+            "h264_mf", // Windows Media Foundation fallback
+            "libx264",
+        ];
+        let mut selected_codec = None;
+        let mut selected_name = "";
+
+        for name in encoder_names {
+            if let Some(c) = ffmpeg::encoder::find_by_name(name) {
+                selected_codec = Some(c);
+                selected_name = name;
+                break;
+            }
+        }
+
+        let codec = selected_codec
+            .ok_or_else(|| EncodeError::Initialization("No suitable H264 encoder found".into()))?;
+
+        tracing::info!("Selected video encoder: {}", selected_name);
+
+        let context = ffmpeg::codec::context::Context::new();
+        let mut encoder = context
+            .encoder()
+            .video()
+            .map_err(|e| EncodeError::Initialization(format!("Failed to create video context: {}", e)))?;
+
+        encoder.set_width(width);
+        encoder.set_height(height);
+        encoder.set_format(ffmpeg::format::Pixel::NV12);
+        if selected_name == "h264_mf" {
+            // Windows Media Foundation requires a standard framerate time base
+            encoder.set_time_base((1, 60));
+            encoder.set_frame_rate(Some((60, 1)));
+        } else {
+            encoder.set_time_base((1, 1_000_000)); // microsecond precision
+        }
+        encoder.set_bit_rate(8_000_000); // 8 Mbps
+        
+        let mut dict = ffmpeg::Dictionary::new();
+        if selected_name == "libx264" {
+            dict.set("preset", "ultrafast");
+            dict.set("tune", "zerolatency");
+        } else if selected_name == "h264_nvenc" {
+            dict.set("preset", "p1");
+            dict.set("tune", "ull");
+        } else if selected_name == "h264_amf" {
+            dict.set("usage", "lowlatency");
+        }
+
+        let encoder = encoder
+            .open_as_with(codec, dict)
+            .map_err(|e| EncodeError::Initialization(format!("Failed to open H264 encoder: {}", e)))?;
+
+        let scaler = ffmpeg::software::scaling::Context::get(
+            ffmpeg::format::Pixel::BGRA,
+            width,
+            height,
+            ffmpeg::format::Pixel::NV12,
+            width,
+            height,
+            ffmpeg::software::scaling::flag::Flags::FAST_BILINEAR,
+        )
+        .map_err(|e| EncodeError::Initialization(format!("Failed to create video scaler: {}", e)))?;
+
+        Ok(Self {
+            encoder,
+            scaler,
+            frame_index: 0,
+            width,
+            height,
+            time_base: if selected_name == "h264_mf" {
+                ffmpeg::Rational(1, 60)
+            } else {
+                ffmpeg::Rational(1, 1_000_000)
+            },
+        })
     }
 
     pub fn encode(
@@ -49,7 +129,10 @@ impl VideoEncoder {
             .run(&raw_avframe, &mut nv12_avframe)
             .map_err(|e| EncodeError::Encoding(format!("Scaler failed: {}", e)))?;
 
-        nv12_avframe.set_pts(Some(frame.timestamp_us as i64));
+        let time_base = self.time_base;
+        let pts = (frame.timestamp_us as i64 * time_base.denominator() as i64) / (time_base.numerator() as i64 * 1_000_000);
+        
+        nv12_avframe.set_pts(Some(pts));
 
         self.encoder.send_frame(&nv12_avframe).map_err(|e| {
             EncodeError::Encoding(format!("Encoder failed to receive frame: {}", e))
