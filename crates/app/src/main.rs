@@ -1,1 +1,3 @@
-fn main() { println!("Hello from app"); }
+fn main() {
+    println!("Hello from app");
+}
