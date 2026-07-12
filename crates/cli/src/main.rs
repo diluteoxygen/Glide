@@ -67,8 +67,11 @@ fn run_full_pipeline() {
     let stop = Arc::new(AtomicBool::new(false));
     let dropped_frames = Arc::new(AtomicU64::new(0));
 
+    let args: Vec<String> = env::args().collect();
+    let output_file = args.iter().find(|a| a.ends_with(".mkv")).cloned().unwrap_or_else(|| "output.mkv".to_string());
+
     // Spawn Muxer
-    let muxer = mux::Muxer::new(rx_mux, rx_params, "output.mkv".to_string()).expect("Failed to init muxer");
+    let muxer = mux::Muxer::new(rx_mux, rx_params, output_file.clone()).expect("Failed to init muxer");
     let stop_mux = Arc::clone(&stop);
     let mux_thread = thread::spawn(move || muxer.start(stop_mux));
 
@@ -99,7 +102,7 @@ fn run_full_pipeline() {
     enc_thread.join().unwrap().unwrap();
     mux_thread.join().unwrap().unwrap();
 
-    info!("Full pipeline closed successfully. Output saved to output.mkv");
+    info!("Full pipeline closed successfully. Output saved to {}", output_file);
 }
 
 fn run_audio_test() {
