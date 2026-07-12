@@ -22,6 +22,8 @@ pub struct WasapiCapturer {
     channels: u16,
 }
 
+unsafe impl Send for WasapiCapturer {}
+
 impl WasapiCapturer {
     pub fn new(track: AudioTrack) -> Result<Self, CaptureError> {
         unsafe {
