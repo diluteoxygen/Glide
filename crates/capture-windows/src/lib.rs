@@ -1,3 +1,5 @@
+#![cfg(target_os = "windows")]
+
 use capture_core::{CaptureError, Frame, PixelFormat, VideoCapturer};
 use crossbeam_channel::Sender;
 use std::sync::{
