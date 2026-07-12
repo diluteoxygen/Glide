@@ -6,7 +6,7 @@ members = [
     "crates/capture-linux",
     "crates/encode",
     "crates/mux",
-    "crates/cli",
+    "crates/cli", "test_cargo",
 ]
 
 [patch.crates-io]
