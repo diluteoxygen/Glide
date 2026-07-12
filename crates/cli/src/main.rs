@@ -17,6 +17,6 @@ fn main() {
     let instance = wgpu::Instance::new(wgpu::InstanceDescriptor::default());
     for adapter in instance.enumerate_adapters(wgpu::Backends::all()) {
         let info = adapter.get_info();
-        info!("Detected GPU: {} ({:?})", info.name, info.backend);
+        info!("Detected GPU: {} ({:?})", &info.name, info.backend);
     }
 }
