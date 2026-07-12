@@ -1,1 +1,23 @@
+# Dependencies
+/target
+/crates/**/target
+Cargo.lock
+
+# However, for a binary project we might want to commit Cargo.lock, but usually workspace libraries might ignore it.
+# Actually, we WANT to commit Cargo.lock for binary projects. The user said: "(ignore target/, commit Cargo.lock since this is a binary project)".
+# So I won't ignore Cargo.lock.
+
+# AI Traces & Docs
 docs/
+.gemini/
+.aider/
+.claude/
+.cursor/
+*.ai
+.history/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
