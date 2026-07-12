@@ -4,15 +4,14 @@ use std::sync::{
     atomic::{AtomicBool, Ordering},
     Arc,
 };
-use windows::core::Interface;
 use windows::Win32::Media::Audio::{
     eCapture, eConsole, eRender, IAudioCaptureClient, IAudioClient, IMMDeviceEnumerator,
     MMDeviceEnumerator, AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_EVENTCALLBACK,
-    AUDCLNT_STREAMFLAGS_LOOPBACK, WAVEFORMATEX, WAVEFORMATEXTENSIBLE,
+    AUDCLNT_STREAMFLAGS_LOOPBACK,
 };
-use windows::Win32::Media::KernelStreaming::WAVE_FORMAT_EXTENSIBLE;
+use windows::Win32::Foundation::WAIT_OBJECT_0;
 use windows::Win32::System::Com::{CoCreateInstance, CoInitializeEx, CLSCTX_ALL, COINIT_MULTITHREADED};
-use windows::Win32::System::Threading::{CreateEventW, WaitForSingleObject, WAIT_OBJECT_0};
+use windows::Win32::System::Threading::{CreateEventW, WaitForSingleObject};
 
 pub struct WasapiCapturer {
     track: AudioTrack,
