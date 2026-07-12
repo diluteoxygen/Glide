@@ -31,7 +31,7 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
-        sudo apt-get install -y libpipewire-0.3-dev
+        sudo apt-get install -y libpipewire-0.3-dev libavcodec-dev libavformat-dev libavutil-dev libavdevice-dev libavfilter-dev libswscale-dev libswresample-dev clang pkg-config
         
     - name: Install Windows dependencies (vcpkg)
       if: runner.os == 'Windows'
