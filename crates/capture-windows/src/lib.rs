@@ -135,11 +135,16 @@ impl VideoCapturer for DxgiCapturer {
         dropped_frames: Arc<AtomicU64>,
     ) -> Result<(), CaptureError> {
         let start_time = Instant::now();
+        let mut frame_count = 0;
+        let mut total_acquire = std::time::Duration::ZERO;
+        let mut total_copy = std::time::Duration::ZERO;
+        let mut total_map = std::time::Duration::ZERO;
 
         while !stop.load(Ordering::Relaxed) {
             let mut frame_info = DXGI_OUTDUPL_FRAME_INFO::default();
             let mut resource: Option<IDXGIResource> = None;
 
+            let t0 = Instant::now();
             let res = unsafe {
                 self.duplication.AcquireNextFrame(
                     100, // 100ms timeout
@@ -147,9 +152,16 @@ impl VideoCapturer for DxgiCapturer {
                     &mut resource,
                 )
             };
+            total_acquire += t0.elapsed();
 
             match res {
                 Ok(_) => {
+                    // If LastPresentTime is 0, the desktop image has not been updated (e.g., just a mouse shape change).
+                    if frame_info.LastPresentTime == 0 {
+                        let _ = unsafe { self.duplication.ReleaseFrame() };
+                        continue;
+                    }
+
                     if let Some(res) = resource {
                         unsafe {
                             let tex: ID3D11Texture2D = res.cast().map_err(|e| {
@@ -159,10 +171,12 @@ impl VideoCapturer for DxgiCapturer {
                                 ))
                             })?;
 
+                            let t1 = Instant::now();
                             let staging = self.ensure_staging_texture()?;
-
                             self.context.CopyResource(&staging, &tex);
+                            total_copy += t1.elapsed();
 
+                            let t2 = Instant::now();
                             let mut mapped = D3D11_MAPPED_SUBRESOURCE::default();
                             self.context
                                 .Map(&staging, 0, D3D11_MAP_READ, 0, Some(&mut mapped))
@@ -170,22 +184,29 @@ impl VideoCapturer for DxgiCapturer {
                                     CaptureError::StreamError(format!("Map failed: {}", e))
                                 })?;
 
-                            let mut data =
-                                Vec::with_capacity((self.width * self.height * 4) as usize);
+                            let len = (self.width * self.height * 4) as usize;
+                            let mut data = vec![0u8; len];
                             let src = mapped.pData as *const u8;
                             let pitch = mapped.RowPitch as usize;
                             let copy_width = (self.width * 4) as usize;
 
-                            for y in 0..self.height {
-                                let row_start = src.add(y as usize * pitch);
-                                data.extend_from_slice(std::slice::from_raw_parts(
-                                    row_start, copy_width,
-                                ));
+                            if pitch == copy_width {
+                                std::ptr::copy_nonoverlapping(src, data.as_mut_ptr(), len);
+                            } else {
+                                let mut dst = data.as_mut_ptr();
+                                for y in 0..self.height {
+                                    std::ptr::copy_nonoverlapping(
+                                        src.add(y as usize * pitch),
+                                        dst,
+                                        copy_width,
+                                    );
+                                    dst = dst.add(copy_width);
+                                }
                             }
 
                             self.context.Unmap(&staging, 0);
-
                             let _ = self.duplication.ReleaseFrame();
+                            total_map += t2.elapsed();
 
                             let frame = Frame {
                                 data,
@@ -197,6 +218,20 @@ impl VideoCapturer for DxgiCapturer {
 
                             if tx.try_send(frame).is_err() {
                                 dropped_frames.fetch_add(1, Ordering::Relaxed);
+                            }
+
+                            frame_count += 1;
+                            if frame_count == 100 {
+                                tracing::info!(
+                                    "Profile (100 frames): Acquire: {:?}, Copy: {:?}, Map/Copy/Unmap: {:?}",
+                                    total_acquire / 100,
+                                    total_copy / 100,
+                                    total_map / 100
+                                );
+                                frame_count = 0;
+                                total_acquire = std::time::Duration::ZERO;
+                                total_copy = std::time::Duration::ZERO;
+                                total_map = std::time::Duration::ZERO;
                             }
                         }
                     } else {
