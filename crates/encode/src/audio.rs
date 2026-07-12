@@ -11,8 +11,9 @@ pub struct AudioEncoder {
     last_channels: u16,
     frame_size: usize,
     /// Per-channel sample buffers. sample_buffers[ch] holds f32 samples for that channel.
+    /// Per-channel sample buffers. sample_buffers[ch] holds f32 samples for that channel.
     sample_buffers: Vec<Vec<f32>>,
-    pts_counter: i64,
+    anchor_pts: Option<u64>,
     pub(crate) time_base: ffmpeg::Rational,
     out_channels: usize,
 }
@@ -52,7 +53,7 @@ impl AudioEncoder {
             last_channels: 0,
             frame_size,
             sample_buffers: (0..out_channels).map(|_| Vec::new()).collect(),
-            pts_counter: 0,
+            anchor_pts: None,
             time_base,
             out_channels,
         })
@@ -118,6 +119,10 @@ impl AudioEncoder {
             // instead of data(ch) which incorrectly uses linesize[ch] that might be 0.
             let plane_floats = resampled_frame.plane::<f32>(ch);
             if !plane_floats.is_empty() {
+                if self.sample_buffers[ch].is_empty() && ch == 0 {
+                    let pts = (frame.timestamp_us * self.encoder.rate() as u64) / 1_000_000;
+                    self.anchor_pts = Some(pts);
+                }
                 self.sample_buffers[ch].extend_from_slice(plane_floats);
             }
         }
@@ -133,8 +138,10 @@ impl AudioEncoder {
             // which FFmpeg 6.0+ might misinterpret without channels explicitly set.
             out_frame.set_channels(self.out_channels as u16);
             out_frame.set_rate(self.encoder.rate());
-            out_frame.set_pts(Some(self.pts_counter));
-            self.pts_counter += self.frame_size as i64;
+            out_frame.set_pts(self.anchor_pts.map(|v| v as i64));
+            if let Some(pts) = &mut self.anchor_pts {
+                *pts += self.frame_size as u64;
+            }
 
             // Write each channel's samples to its plane
             for ch in 0..self.out_channels {
@@ -148,6 +155,10 @@ impl AudioEncoder {
             })?;
 
             self.receive_and_send(stream_index, tx)?;
+
+            if self.sample_buffers[0].is_empty() {
+                self.anchor_pts = None;
+            }
         }
 
         Ok(())

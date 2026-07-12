@@ -18,7 +18,12 @@ impl PipeWireAudioCapturer {
 }
 
 impl AudioCapturer for PipeWireAudioCapturer {
-    fn start(&mut self, tx: Sender<AudioFrame>, stop: Arc<AtomicBool>) -> Result<(), CaptureError> {
+    fn start(
+        &mut self,
+        tx: Sender<AudioFrame>,
+        stop: Arc<AtomicBool>,
+        start_time: Arc<AtomicU64>,
+    ) -> Result<(), CaptureError> {
         let start_time = Instant::now();
 
         while !stop.load(Ordering::Relaxed) {

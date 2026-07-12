@@ -138,6 +138,10 @@ impl VideoEncoder {
             EncodeError::Encoding(format!("Encoder failed to receive frame: {}", e))
         })?;
 
+        if std::env::var("GLIDE_SLOW_ENCODER").is_ok() {
+            std::thread::sleep(std::time::Duration::from_millis(50));
+        }
+
         self.receive_and_send(stream_index, tx)?;
 
         self.frame_index += 1;

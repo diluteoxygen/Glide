@@ -66,6 +66,7 @@ fn run_full_pipeline() {
 
     let stop = Arc::new(AtomicBool::new(false));
     let dropped_frames = Arc::new(AtomicU64::new(0));
+    let start_time = Arc::new(AtomicU64::new(u64::MAX));
 
     let args: Vec<String> = env::args().collect();
     let output_file = args.iter().find(|a| a.ends_with(".mkv")).cloned().unwrap_or_else(|| "output.mkv".to_string());
@@ -82,13 +83,16 @@ fn run_full_pipeline() {
 
     // Spawn Capturers
     let stop_vid = Arc::clone(&stop);
-    let vid_thread = thread::spawn(move || vid_cap.start(tx_vid, stop_vid, dropped_frames));
+    let start_vid = Arc::clone(&start_time);
+    let vid_thread = thread::spawn(move || vid_cap.start(tx_vid, stop_vid, dropped_frames, start_vid));
 
     let stop_sys = Arc::clone(&stop);
-    let sys_thread = thread::spawn(move || sys_cap.start(tx_sys, stop_sys));
+    let start_sys = Arc::clone(&start_time);
+    let sys_thread = thread::spawn(move || sys_cap.start(tx_sys, stop_sys, start_sys));
 
     let stop_mic = Arc::clone(&stop);
-    let mic_thread = thread::spawn(move || mic_cap.start(tx_mic, stop_mic));
+    let start_mic = Arc::clone(&start_time);
+    let mic_thread = thread::spawn(move || mic_cap.start(tx_mic, stop_mic, start_mic));
 
     info!("Recording for 10 seconds...");
     thread::sleep(Duration::from_secs(10));
@@ -123,14 +127,17 @@ fn run_audio_test() {
 
     let (tx, rx) = bounded::<AudioFrame>(100);
     let stop = Arc::new(AtomicBool::new(false));
+    let start_time = Arc::new(AtomicU64::new(u64::MAX));
 
     let tx_sys = tx.clone();
     let stop_sys = Arc::clone(&stop);
-    let sys_thread = thread::spawn(move || sys_cap.start(tx_sys, stop_sys));
+    let start_sys = Arc::clone(&start_time);
+    let sys_thread = thread::spawn(move || sys_cap.start(tx_sys, stop_sys, start_sys));
 
     let tx_mic = tx.clone();
     let stop_mic = Arc::clone(&stop);
-    let mic_thread = thread::spawn(move || mic_cap.start(tx_mic, stop_mic));
+    let start_mic = Arc::clone(&start_time);
+    let mic_thread = thread::spawn(move || mic_cap.start(tx_mic, stop_mic, start_mic));
 
     let run_duration = Duration::from_secs(10);
     let start_time = Instant::now();
@@ -218,12 +225,14 @@ fn run_video_test(dump_frame: bool) {
     let (tx, rx) = bounded::<Frame>(5);
     let stop = Arc::new(AtomicBool::new(false));
     let dropped_frames = Arc::new(AtomicU64::new(0));
+    let start_time = Arc::new(AtomicU64::new(u64::MAX));
 
     let stop_clone = Arc::clone(&stop);
     let dropped_clone = Arc::clone(&dropped_frames);
+    let start_clone = Arc::clone(&start_time);
 
     // Spawn capture thread
-    let capture_thread = thread::spawn(move || capturer.start(tx, stop_clone, dropped_clone));
+    let capture_thread = thread::spawn(move || capturer.start(tx, stop_clone, dropped_clone, start_clone));
 
     // Initialize sysinfo to monitor CPU usage
     let mut sys = System::new_all();

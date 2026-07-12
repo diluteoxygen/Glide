@@ -136,8 +136,14 @@ impl VideoCapturer for DxgiCapturer {
         tx: Sender<Frame>,
         stop: Arc<AtomicBool>,
         dropped_frames: Arc<AtomicU64>,
+        start_time: Arc<AtomicU64>,
     ) -> Result<(), CaptureError> {
-        let start_time = Instant::now();
+        let mut qpf = 0i64;
+        unsafe {
+            windows::Win32::System::Performance::QueryPerformanceFrequency(&mut qpf).map_err(|e| CaptureError::Initialization(format!("QPF failed: {}", e)))?;
+        }
+        let qpf = qpf as u64;
+
         let mut frame_count = 0;
         let mut total_acquire = std::time::Duration::ZERO;
         let mut total_copy = std::time::Duration::ZERO;
@@ -211,12 +217,16 @@ impl VideoCapturer for DxgiCapturer {
                             let _ = self.duplication.ReleaseFrame();
                             total_map += t2.elapsed();
 
+                            let qpc_us = (frame_info.LastPresentTime as u64 * 1_000_000) / qpf;
+                            let _ = start_time.fetch_min(qpc_us, Ordering::Relaxed);
+                            let normalized_ts = qpc_us - start_time.load(Ordering::Relaxed);
+
                             let frame = Frame {
                                 data,
                                 format: PixelFormat::Bgra,
                                 width: self.width,
                                 height: self.height,
-                                timestamp_us: start_time.elapsed().as_micros() as u64,
+                                timestamp_us: normalized_ts,
                             };
 
                             if tx.try_send(frame).is_err() {

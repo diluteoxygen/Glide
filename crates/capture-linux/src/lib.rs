@@ -31,6 +31,7 @@ impl VideoCapturer for PipeWireCapturer {
         tx: Sender<Frame>,
         stop: Arc<AtomicBool>,
         dropped_frames: Arc<AtomicU64>,
+        start_time: Arc<AtomicU64>,
     ) -> Result<(), CaptureError> {
         let start_time = Instant::now();
 

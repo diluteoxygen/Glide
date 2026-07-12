@@ -1,7 +1,7 @@
 use capture_core::{AudioCapturer, AudioFrame, AudioTrack, CaptureError};
 use crossbeam_channel::Sender;
 use std::sync::{
-    atomic::{AtomicBool, Ordering},
+    atomic::{AtomicBool, AtomicU64, Ordering},
     Arc,
 };
 use windows::Win32::Media::Audio::{
@@ -97,7 +97,12 @@ impl WasapiCapturer {
 }
 
 impl AudioCapturer for WasapiCapturer {
-    fn start(&mut self, tx: Sender<AudioFrame>, stop: Arc<AtomicBool>) -> Result<(), CaptureError> {
+    fn start(
+        &mut self,
+        tx: Sender<AudioFrame>,
+        stop: Arc<AtomicBool>,
+        start_time: Arc<AtomicU64>,
+    ) -> Result<(), CaptureError> {
         unsafe {
             // Ensure COM is initialized for the capture thread
             let _ = CoInitializeEx(None, COINIT_MULTITHREADED);
@@ -140,13 +145,17 @@ impl AudioCapturer for WasapiCapturer {
                             std::slice::from_raw_parts(p_data as *const f32, byte_count / 4);
 
                         let data = slice.to_vec();
+                        
+                        let qpc_us = qpc_position / 10;
+                        let _ = start_time.fetch_min(qpc_us, Ordering::Relaxed);
+                        let normalized_ts = qpc_us - start_time.load(Ordering::Relaxed);
 
                         let frame = AudioFrame {
                             data,
                             sample_rate: self.sample_rate,
                             channels: self.channels,
                             track: self.track,
-                            timestamp_us: qpc_position / 10, // QPC returns 100ns units, convert to microseconds
+                            timestamp_us: normalized_ts,
                         };
 
                         let _ = tx.send(frame);
