@@ -33,6 +33,12 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libpipewire-0.3-dev
         
+    - name: Install Windows dependencies (vcpkg)
+      if: runner.os == 'Windows'
+      run: |
+        vcpkg install --triplet x64-windows
+        New-Item -ItemType Junction -Path "$env:VCPKG_INSTALLATION_ROOT\installed" -Target "vcpkg_installed" -Force
+        echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" >> $env:GITHUB_ENV
     - name: Build Workspace
       run: cargo build --workspace
       
