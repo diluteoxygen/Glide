@@ -4,6 +4,14 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+capture-core = { path = "../capture-core" }
 tracing = "0.1"
 tracing-subscriber = "0.3"
-wgpu = "0.20" # Adding wgpu for GPU vendor detection
+crossbeam-channel = "0.5"
+sysinfo = "0.30"
+
+[target.'cfg(target_os = "windows")'.dependencies]
+capture-windows = { path = "../capture-windows" }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+capture-linux = { path = "../capture-linux" }
