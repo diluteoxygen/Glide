@@ -119,7 +119,7 @@ impl Encoder {
             }
 
             // System Audio
-            if let Ok(frame) = self.sys_rx.try_recv() {
+            while let Ok(frame) = self.sys_rx.try_recv() {
                 idle = false;
                 if let Err(e) = sys_encoder.encode(frame, sys_stream_idx, &self.packet_tx) {
                     error!("System audio encode error: {}", e);
@@ -127,7 +127,7 @@ impl Encoder {
             }
 
             // Mic Audio
-            if let Ok(frame) = self.mic_rx.try_recv() {
+            while let Ok(frame) = self.mic_rx.try_recv() {
                 idle = false;
                 if let Err(e) = mic_encoder.encode(frame, mic_stream_idx, &self.packet_tx) {
                     error!("Mic audio encode error: {}", e);

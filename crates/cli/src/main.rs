@@ -94,8 +94,15 @@ fn run_full_pipeline() {
     let start_mic = Arc::clone(&start_time);
     let mic_thread = thread::spawn(move || mic_cap.start(tx_mic, stop_mic, start_mic));
 
-    info!("Recording for 10 seconds...");
-    thread::sleep(Duration::from_secs(10));
+    let duration_secs = args
+        .iter()
+        .position(|a| a == "--duration")
+        .and_then(|i| args.get(i + 1))
+        .and_then(|s| s.parse::<u64>().ok())
+        .unwrap_or(10);
+
+    info!("Recording for {} seconds...", duration_secs);
+    thread::sleep(Duration::from_secs(duration_secs));
 
     info!("Signaling stop to all threads...");
     stop.store(true, Ordering::Relaxed);
