@@ -24,6 +24,14 @@ use windows::Win32::Graphics::Dxgi::{
     IDXGIOutput1, IDXGIOutputDuplication, IDXGIResource, DXGI_ERROR_ACCESS_LOST,
     DXGI_ERROR_WAIT_TIMEOUT, DXGI_OUTDUPL_FRAME_INFO,
 };
+use windows::Win32::UI::WindowsAndMessaging::{
+    GetCursorInfo, GetIconInfo, DrawIconEx, CURSORINFO, ICONINFO, DI_NORMAL, CURSOR_SHOWING,
+};
+use windows::Win32::Graphics::Gdi::{
+    CreateCompatibleDC, CreateDIBSection, SelectObject, DeleteObject, DeleteDC, GetObjectW,
+    BITMAP, BITMAPINFO, BITMAPINFOHEADER, DIB_RGB_COLORS, BI_RGB,
+};
+use std::ffi::c_void;
 
 pub struct DxgiCapturer {
     device: ID3D11Device,
@@ -216,6 +224,102 @@ impl VideoCapturer for DxgiCapturer {
                             self.context.Unmap(&staging, 0);
                             let _ = self.duplication.ReleaseFrame();
                             total_map += t2.elapsed();
+
+                            // Cursor compositing using Win32 GDI
+                            let mut ci = CURSORINFO {
+                                    cbSize: std::mem::size_of::<CURSORINFO>() as u32,
+                                    ..Default::default()
+                                };
+                                if GetCursorInfo(&mut ci).is_ok() && ci.flags == CURSOR_SHOWING {
+                                    let mut ii = ICONINFO::default();
+                                    if GetIconInfo(ci.hCursor, &mut ii).is_ok() {
+                                        let mut bm = BITMAP::default();
+                                        if GetObjectW(ii.hbmMask, std::mem::size_of::<BITMAP>() as i32, Some(&mut bm as *mut _ as *mut c_void)) != 0 {
+                                            let width = bm.bmWidth;
+                                            let height = if ii.hbmColor.is_invalid() { bm.bmHeight / 2 } else { bm.bmHeight };
+
+                                            let draw_x = ci.ptScreenPos.x - ii.xHotspot as i32;
+                                            let draw_y = ci.ptScreenPos.y - ii.yHotspot as i32;
+
+                                            let s_left = 0;
+                                            let s_top = 0;
+                                            let s_right = self.width as i32;
+                                            let s_bottom = self.height as i32;
+
+                                            let i_left = draw_x.max(s_left);
+                                            let i_top = draw_y.max(s_top);
+                                            let i_right = (draw_x + width).min(s_right);
+                                            let i_bottom = (draw_y + height).min(s_bottom);
+
+                                            if i_left < i_right && i_top < i_bottom {
+                                                let patch_w = i_right - i_left;
+                                                let patch_h = i_bottom - i_top;
+                                                let dib_x = i_left - draw_x;
+                                                let dib_y = i_top - draw_y;
+
+                                                let hdc = CreateCompatibleDC(None);
+                                                let bmi = BITMAPINFO {
+                                                    bmiHeader: BITMAPINFOHEADER {
+                                                        biSize: std::mem::size_of::<BITMAPINFOHEADER>() as u32,
+                                                        biWidth: width,
+                                                        biHeight: -(height as i32), // Top-down
+                                                        biPlanes: 1,
+                                                        biBitCount: 32,
+                                                        biCompression: BI_RGB.0 as u32,
+                                                        ..Default::default()
+                                                    },
+                                                    ..Default::default()
+                                                };
+                                                let mut p_bits: *mut c_void = std::ptr::null_mut();
+                                                let hbm = CreateDIBSection(hdc, &bmi as *const _ as *const BITMAPINFO, DIB_RGB_COLORS, &mut p_bits, None, 0);
+                                                
+                                                if let Ok(hbm) = hbm {
+                                                    let old_hbm = SelectObject(hdc, hbm);
+
+                                                    // Copy valid patch from frame buffer to DIB
+                                                    let p_bits_u8 = p_bits as *mut u8;
+                                                    for y in 0..patch_h {
+                                                        let screen_y = i_top + y;
+                                                        let dib_y_actual = dib_y + y;
+                                                        let screen_offset = ((screen_y * self.width as i32 + i_left) * 4) as usize;
+                                                        let dib_offset = ((dib_y_actual * width + dib_x) * 4) as usize;
+                                                        std::ptr::copy_nonoverlapping(
+                                                            data[screen_offset..].as_ptr(),
+                                                            p_bits_u8.add(dib_offset),
+                                                            (patch_w * 4) as usize
+                                                        );
+                                                    }
+
+                                                    // Draw cursor onto DIB
+                                                    let _ = DrawIconEx(hdc, 0, 0, ci.hCursor, width, height, 0, None, DI_NORMAL);
+
+                                                    // Copy patch back to frame buffer
+                                                    for y in 0..patch_h {
+                                                        let screen_y = i_top + y;
+                                                        let dib_y_actual = dib_y + y;
+                                                        let screen_offset = ((screen_y * self.width as i32 + i_left) * 4) as usize;
+                                                        let dib_offset = ((dib_y_actual * width + dib_x) * 4) as usize;
+                                                        std::ptr::copy_nonoverlapping(
+                                                            p_bits_u8.add(dib_offset),
+                                                            data[screen_offset..].as_mut_ptr(),
+                                                            (patch_w * 4) as usize
+                                                        );
+                                                    }
+
+                                                    SelectObject(hdc, old_hbm);
+                                                    let _ = DeleteObject(hbm);
+                                                }
+                                                let _ = DeleteDC(hdc);
+                                            }
+                                        }
+                                        if !ii.hbmColor.is_invalid() {
+                                            let _ = DeleteObject(ii.hbmColor);
+                                        }
+                                        if !ii.hbmMask.is_invalid() {
+                                            let _ = DeleteObject(ii.hbmMask);
+                                        }
+                                    }
+                                }
 
                             let qpc_us = (frame_info.LastPresentTime as u64 * 1_000_000) / qpf;
                             let _ = start_time.fetch_min(qpc_us, Ordering::Relaxed);
