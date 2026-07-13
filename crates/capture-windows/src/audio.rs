@@ -148,7 +148,7 @@ impl AudioCapturer for WasapiCapturer {
                         
                         let qpc_us = qpc_position / 10;
                         let _ = start_time.fetch_min(qpc_us, Ordering::Relaxed);
-                        let normalized_ts = qpc_us - start_time.load(Ordering::Relaxed);
+                        let normalized_ts = qpc_us.saturating_sub(start_time.load(Ordering::Relaxed));
 
                         let frame = AudioFrame {
                             data,

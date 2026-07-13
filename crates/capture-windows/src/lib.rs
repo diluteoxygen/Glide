@@ -219,7 +219,7 @@ impl VideoCapturer for DxgiCapturer {
 
                             let qpc_us = (frame_info.LastPresentTime as u64 * 1_000_000) / qpf;
                             let _ = start_time.fetch_min(qpc_us, Ordering::Relaxed);
-                            let normalized_ts = qpc_us - start_time.load(Ordering::Relaxed);
+                            let normalized_ts = qpc_us.saturating_sub(start_time.load(Ordering::Relaxed));
 
                             let frame = Frame {
                                 data,
