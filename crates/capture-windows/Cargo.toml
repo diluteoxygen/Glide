@@ -24,5 +24,4 @@ features = [
     "Win32_Media_KernelStreaming",
     "Win32_Security",
     "Win32_System_Performance",
-    "Win32_UI_WindowsAndMessaging",
 ]

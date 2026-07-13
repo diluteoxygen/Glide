@@ -32,7 +32,6 @@ pub struct DxgiCapturer {
     staging_tex: Option<ID3D11Texture2D>,
     width: u32,
     height: u32,
-    desktop_rect: windows::Win32::Foundation::RECT,
 }
 
 impl DxgiCapturer {
@@ -82,7 +81,6 @@ impl DxgiCapturer {
                 .map_err(|e| CaptureError::Initialization(format!("GetDesc failed: {}", e)))?;
             let width = (desc.DesktopCoordinates.right - desc.DesktopCoordinates.left) as u32;
             let height = (desc.DesktopCoordinates.bottom - desc.DesktopCoordinates.top) as u32;
-            let desktop_rect = desc.DesktopCoordinates;
 
             let duplication = output1.DuplicateOutput(&device).map_err(|e| {
                 CaptureError::Initialization(format!("DuplicateOutput failed: {}", e))
@@ -95,7 +93,6 @@ impl DxgiCapturer {
                 staging_tex: None,
                 width,
                 height,
-                desktop_rect,
             })
         }
     }
@@ -220,17 +217,6 @@ impl VideoCapturer for DxgiCapturer {
                             let _ = self.duplication.ReleaseFrame();
                             total_map += t2.elapsed();
 
-                            // Get cursor info and composite it onto the BGRA buffer
-                            let mut cursor_info = windows::Win32::UI::WindowsAndMessaging::CURSORINFO::default();
-                            cursor_info.cbSize = std::mem::size_of::<windows::Win32::UI::WindowsAndMessaging::CURSORINFO>() as u32;
-                            if windows::Win32::UI::WindowsAndMessaging::GetCursorInfo(&mut cursor_info).is_ok() {
-                                if cursor_info.flags == windows::Win32::UI::WindowsAndMessaging::CURSOR_SHOWING {
-                                    let x = cursor_info.ptScreenPos.x - self.desktop_rect.left;
-                                    let y = cursor_info.ptScreenPos.y - self.desktop_rect.top;
-                                    draw_cursor(&mut data, self.width, self.height, x, y);
-                                }
-                            }
-
                             let qpc_us = (frame_info.LastPresentTime as u64 * 1_000_000) / qpf;
                             let _ = start_time.fetch_min(qpc_us, Ordering::Relaxed);
                             let normalized_ts = qpc_us.saturating_sub(start_time.load(Ordering::Relaxed));
@@ -279,63 +265,5 @@ impl VideoCapturer for DxgiCapturer {
         }
 
         Ok(())
-    }
-}
-
-const CURSOR_MASK: [[u8; 12]; 19] = [
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0],
-    [1, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0],
-    [1, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0],
-    [1, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0],
-    [1, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0],
-    [1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0],
-    [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0],
-    [1, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1],
-    [1, 2, 2, 1, 2, 2, 1, 0, 0, 0, 0, 0],
-    [1, 2, 1, 0, 1, 2, 2, 1, 0, 0, 0, 0],
-    [1, 1, 0, 0, 1, 2, 2, 1, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 1, 2, 2, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 2, 2, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-];
-
-fn draw_cursor(data: &mut [u8], width: u32, height: u32, x: i32, y: i32) {
-    for row in 0..19 {
-        let py = y + row;
-        if py < 0 || py >= height as i32 {
-            continue;
-        }
-        for col in 0..12 {
-            let px = x + col;
-            if px < 0 || px >= width as i32 {
-                continue;
-            }
-            let pixel_type = CURSOR_MASK[row as usize][col as usize];
-            if pixel_type == 0 {
-                continue;
-            }
-            let idx = ((py as usize * width as usize) + px as usize) * 4;
-            if idx + 3 >= data.len() {
-                continue;
-            }
-            if pixel_type == 1 {
-                // Black border
-                data[idx] = 0;       // B
-                data[idx + 1] = 0;   // G
-                data[idx + 2] = 0;   // R
-                data[idx + 3] = 255; // A
-            } else if pixel_type == 2 {
-                // White fill
-                data[idx] = 255;     // B
-                data[idx + 1] = 255; // G
-                data[idx + 2] = 255; // R
-                data[idx + 3] = 255; // A
-            }
-        }
     }
 }
