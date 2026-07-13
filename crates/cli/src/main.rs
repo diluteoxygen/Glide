@@ -94,6 +94,11 @@ fn run_full_pipeline() {
     let start_mic = Arc::clone(&start_time);
     let mic_thread = thread::spawn(move || mic_cap.start(tx_mic, stop_mic, start_mic));
 
+    // Spawn Event Tracker (Cursor & Mouse Events)
+    let event_log_path = std::path::PathBuf::from(&output_file).with_extension("events.jsonl");
+    let mut event_tracker = camera::EventTracker::start(event_log_path, Arc::clone(&stop), Arc::clone(&start_time))
+        .expect("Failed to start event tracker");
+
     let duration_secs = args
         .iter()
         .position(|a| a == "--duration")
@@ -106,6 +111,8 @@ fn run_full_pipeline() {
 
     info!("Signaling stop to all threads...");
     stop.store(true, Ordering::Relaxed);
+
+    event_tracker.stop();
 
     vid_thread.join().unwrap().unwrap();
     sys_thread.join().unwrap().unwrap();

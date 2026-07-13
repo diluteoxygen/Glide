@@ -14,6 +14,7 @@ encode = { path = "../encode" }
 mux = { path = "../mux" }
 crossbeam-channel = "0.5"
 sysinfo = "0.30"
+camera = { path = "../camera" }
 
 [target.'cfg(target_os = "windows")'.dependencies]
 capture-windows = { path = "../capture-windows" }
