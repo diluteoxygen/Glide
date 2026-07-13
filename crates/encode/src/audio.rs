@@ -11,7 +11,6 @@ pub struct AudioEncoder {
     last_channels: u16,
     frame_size: usize,
     /// Per-channel sample buffers. sample_buffers[ch] holds f32 samples for that channel.
-    /// Per-channel sample buffers. sample_buffers[ch] holds f32 samples for that channel.
     sample_buffers: Vec<Vec<f32>>,
     anchor_pts: Option<u64>,
     pub(crate) time_base: ffmpeg::Rational,
@@ -119,9 +118,29 @@ impl AudioEncoder {
             // instead of data(ch) which incorrectly uses linesize[ch] that might be 0.
             let plane_floats = resampled_frame.plane::<f32>(ch);
             if !plane_floats.is_empty() {
-                if self.sample_buffers[ch].is_empty() && ch == 0 {
-                    let pts = (frame.timestamp_us * self.encoder.rate() as u64) / 1_000_000;
-                    self.anchor_pts = Some(pts);
+                if ch == 0 {
+                    let incoming_pts = (frame.timestamp_us * self.encoder.rate() as u64) / 1_000_000;
+                    
+                    if let Some(current_anchor) = self.anchor_pts {
+                        let expected_pts = current_anchor + self.sample_buffers[0].len() as u64;
+                        let tolerance = (self.encoder.rate() / 10) as u64; // 100ms
+                        
+                        let gap = if incoming_pts > expected_pts {
+                            incoming_pts - expected_pts
+                        } else {
+                            expected_pts - incoming_pts
+                        };
+                        
+                        if gap > tolerance {
+                            let gap_ms = (gap * 1000) / self.encoder.rate() as u64;
+                            let tol_ms = (tolerance * 1000) / self.encoder.rate() as u64;
+                            tracing::warn!("Audio PTS gap detected: incoming {}, expected {}, gap {} samples ({}ms) > tolerance {} samples ({}ms). Re-anchoring.", 
+                                incoming_pts, expected_pts, gap, gap_ms, tolerance, tol_ms);
+                            self.anchor_pts = Some(incoming_pts.saturating_sub(self.sample_buffers[0].len() as u64));
+                        }
+                    } else {
+                        self.anchor_pts = Some(incoming_pts);
+                    }
                 }
                 self.sample_buffers[ch].extend_from_slice(plane_floats);
             }
@@ -139,6 +158,7 @@ impl AudioEncoder {
             out_frame.set_channels(self.out_channels as u16);
             out_frame.set_rate(self.encoder.rate());
             out_frame.set_pts(self.anchor_pts.map(|v| v as i64));
+
             if let Some(pts) = &mut self.anchor_pts {
                 *pts += self.frame_size as u64;
             }
@@ -155,10 +175,6 @@ impl AudioEncoder {
             })?;
 
             self.receive_and_send(stream_index, tx)?;
-
-            if self.sample_buffers[0].is_empty() {
-                self.anchor_pts = None;
-            }
         }
 
         Ok(())
@@ -199,3 +215,44 @@ impl AudioEncoder {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use capture_core::AudioTrack;
+    use crossbeam_channel::bounded;
+
+    #[test]
+    fn test_audio_pts_gap() {
+        let subscriber = tracing_subscriber::FmtSubscriber::builder()
+            .with_max_level(tracing::Level::DEBUG)
+            .finish();
+        let _ = tracing::subscriber::set_global_default(subscriber);
+
+        ffmpeg::init().unwrap();
+
+        let mut encoder = AudioEncoder::new(48000, 2).unwrap();
+        let (tx, _rx) = bounded(10000);
+
+        let samples_per_chunk = 960; // 20ms at 48kHz
+        let floats_per_chunk = samples_per_chunk * 2;
+        let mut current_us: u64 = 0;
+
+        for i in 0..500 { // 10 seconds total (500 * 20ms)
+            let frame = AudioFrame {
+                data: vec![0.0f32; floats_per_chunk],
+                sample_rate: 48000,
+                channels: 2,
+                track: AudioTrack::SystemLoopback,
+                timestamp_us: current_us,
+            };
+
+            encoder.encode(frame, 0, &tx).unwrap();
+            current_us += 20_000;
+
+            if i == 250 {
+                current_us += 105_000; // Simulated dropped frames!
+                tracing::info!("--- SIMULATED GAP OF 105ms (DROPPED FRAMES) ---");
+            }
+        }
+    }
+}

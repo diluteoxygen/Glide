@@ -676,6 +676,7 @@ dependencies = [
  "ffmpeg-next",
  "thiserror 1.0.69",
  "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
