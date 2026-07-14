@@ -28,3 +28,5 @@ test_cargo/
 test_cargo_2/
 test_encoder.rs
 test_send.rs
+*.mp4
+*.jsonl
