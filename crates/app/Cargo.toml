@@ -4,3 +4,29 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+eframe = "0.27"
+tray-icon = "0.13"
+global-hotkey = "0.4"
+rfd = "0.14"
+crossbeam-channel = "0.5"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+sysinfo = "0.30"
+parking_lot = "0.12"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+capture-core = { path = "../capture-core" }
+camera-core = { path = "../camera-core" }
+camera = { path = "../camera" }
+encode = { path = "../encode" }
+mux = { path = "../mux" }
+otf-compositor = { path = "../otf-compositor" }
+otf-overlay = { path = "../otf-overlay" }
+input-hooks = { path = "../input-hooks" }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+capture-windows = { path = "../capture-windows" }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+capture-linux = { path = "../capture-linux" }

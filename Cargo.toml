@@ -14,7 +14,8 @@ members = [
     "crates/input-hooks",
     "crates/otf-camera",
     "crates/otf-compositor",
-    "crates/otf-overlay"
+    "crates/otf-overlay",
+    "crates/app"
 ]
 
 [patch.crates-io]
