@@ -1,0 +1,856 @@
+[1m[92m    Updating[0m crates.io index
+[1m[92m Downloading[0m crates ...
+[1m[92m  Downloaded[0m bit-vec v0.6.3
+[1m[92m  Downloaded[0m bytemuck_derive v1.11.0
+[1m[92m  Downloaded[0m bit-set v0.5.3
+[1m[92m  Downloaded[0m codespan-reporting v0.11.1
+[1m[92m  Downloaded[0m cfg_aliases v0.1.1
+[1m[92m  Downloaded[0m ash v0.37.3+1.3.251
+[1m[92m  Downloaded[0m document-features v0.2.12
+[1m[92m  Downloaded[0m foldhash v0.1.5
+[1m[92m  Downloaded[0m gpu-alloc-types v0.3.1
+[1m[92m  Downloaded[0m gpu-descriptor v0.3.2
+[1m[92m  Downloaded[0m gpu-descriptor-types v0.2.0
+[1m[92m  Downloaded[0m gpu-alloc v0.6.2
+[1m[92m  Downloaded[0m hashbrown v0.15.5
+[1m[92m  Downloaded[0m glow v0.13.1
+[1m[92m  Downloaded[0m hexf-parse v0.2.1
+[1m[92m  Downloaded[0m itoa v1.0.18
+[1m[92m  Downloaded[0m khronos-egl v6.0.0
+[1m[92m  Downloaded[0m libloading v0.7.4
+[1m[92m  Downloaded[0m litrs v1.0.0
+[1m[92m  Downloaded[0m naga v0.20.0
+[1m[92m  Downloaded[0m pollster v0.3.0
+[1m[92m  Downloaded[0m pollster v1.0.1
+[1m[92m  Downloaded[0m raw-window-handle v0.6.2
+[1m[92m  Downloaded[0m renderdoc-sys v1.1.0
+[1m[92m  Downloaded[0m serde_json v1.0.150
+[1m[92m  Downloaded[0m spirv v0.3.0+sdk-1.3.268.0
+[1m[92m  Downloaded[0m termcolor v1.4.1
+[1m[92m  Downloaded[0m unicode-xid v0.2.6
+[1m[92m  Downloaded[0m wgpu-types v0.20.0
+[1m[92m  Downloaded[0m wgpu-core v0.21.1
+[1m[92m  Downloaded[0m wgpu-hal v0.21.1
+[1m[92m  Downloaded[0m wgpu v0.20.1
+[1m[92m  Downloaded[0m zmij v1.0.23
+[1m[92m   Compiling[0m smallvec v1.15.2
+[1m[92m   Compiling[0m clang-sys v1.8.1
+[1m[92m   Compiling[0m toml_edit v0.22.27
+[1m[92m   Compiling[0m annotate-snippets v0.9.2
+[1m[92m   Compiling[0m bytemuck_derive v1.11.0
+[1m[92m   Compiling[0m parking_lot_core v0.9.12
+[1m[92m   Compiling[0m toml_edit v0.25.12+spec-1.1.0
+[1m[92m   Compiling[0m bytemuck v1.25.1
+[1m[92m   Compiling[0m icu_normalizer v2.2.0
+[1m[92m   Compiling[0m parking_lot v0.12.5
+[1m[92m   Compiling[0m toml v0.8.23
+[1m[92m   Compiling[0m bindgen v0.69.5
+[1m[92m   Compiling[0m system-deps v6.2.2
+[1m[92m   Compiling[0m bindgen v0.72.1
+[1m[92m   Compiling[0m idna_adapter v1.2.2
+[1m[92m   Compiling[0m windows v0.58.0
+[1m[92m   Compiling[0m proc-macro-crate v3.5.0
+[1m[92m   Compiling[0m khronos-egl v6.0.0
+[1m[92m   Compiling[0m bit-vec v0.6.3
+[1m[92m   Compiling[0m termcolor v1.4.1
+[1m[92m   Compiling[0m ash v0.37.3+1.3.251
+[1m[92m   Compiling[0m foldhash v0.1.5
+[1m[92m   Compiling[0m hashbrown v0.15.5
+[1m[92m   Compiling[0m codespan-reporting v0.11.1
+[1m[92m   Compiling[0m bit-set v0.5.3
+[1m[92m   Compiling[0m idna v1.1.0
+[1m[92m   Compiling[0m wgpu-hal v0.21.1
+[1m[92m   Compiling[0m capture-core v0.1.0 (/home/runner/work/Glide/Glide/crates/capture-core)
+[1m[92m   Compiling[0m gpu-alloc-types v0.3.1
+[1m[92m   Compiling[0m gpu-descriptor-types v0.2.0
+[1m[92m   Compiling[0m spirv v0.3.0+sdk-1.3.268.0
+[1m[92m   Compiling[0m hexf-parse v0.2.1
+[1m[92m   Compiling[0m unicode-xid v0.2.6
+[1m[92m   Compiling[0m naga v0.20.0
+[1m[92m   Compiling[0m libspa-sys v0.8.0
+[1m[92m   Compiling[0m ffmpeg-sys-next v6.1.0 (/home/runner/work/Glide/Glide/crates/ffmpeg-sys-next)
+[1m[92m   Compiling[0m gpu-descriptor v0.3.2
+[1m[92m   Compiling[0m gpu-alloc v0.6.2
+[1m[92m   Compiling[0m url v2.5.8
+[1m[92m   Compiling[0m zvariant_derive v4.2.0
+[1m[92m   Compiling[0m wgpu-core v0.21.1
+[1m[92m   Compiling[0m wgpu-types v0.20.0
+[1m[92m   Compiling[0m litrs v1.0.0
+[1m[92m   Compiling[0m raw-window-handle v0.6.2
+[1m[92m   Compiling[0m renderdoc-sys v1.1.0
+[1m[92m   Compiling[0m glow v0.13.1
+[1m[92m   Compiling[0m camera-core v0.1.0 (/home/runner/work/Glide/Glide/crates/camera-core)
+[1m[92m   Compiling[0m zmij v1.0.23
+[1m[92m   Compiling[0m zvariant v4.2.0
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:2403:5
+     [1m[94m|[0m
+[1m[94m2401[0m [1m[94m|[0m #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                              [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m2402[0m [1m[94m|[0m pub struct _IO_cookie_io_functions_t {
+[1m[94m2403[0m [1m[94m|[0m     pub read: cookie_read_function_t,
+     [1m[94m|[0m     [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+     [1m[94m= [0m[1mnote[0m: `#[warn(unpredictable_function_pointer_comparisons)]` on by default
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:2404:5
+     [1m[94m|[0m
+[1m[94m2401[0m [1m[94m|[0m #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                              [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m2404[0m [1m[94m|[0m     pub write: cookie_write_function_t,
+     [1m[94m|[0m     [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:2405:5
+     [1m[94m|[0m
+[1m[94m2401[0m [1m[94m|[0m #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                              [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m2405[0m [1m[94m|[0m     pub seek: cookie_seek_function_t,
+     [1m[94m|[0m     [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:2406:5
+     [1m[94m|[0m
+[1m[94m2401[0m [1m[94m|[0m #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                              [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m2406[0m [1m[94m|[0m     pub close: cookie_close_function_t,
+     [1m[94m|[0m     [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:4240:5
+     [1m[94m|[0m
+[1m[94m4237[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m4240[0m [1m[94m|[0m [1m[33m/[0m     pub item_name:
+[1m[94m4241[0m [1m[94m|[0m [1m[33m|[0m         ::std::option::Option<unsafe extern "C" fn(ctx: *mut libc::c_void) -> *const libc::c_char>,
+     [1m[94m|[0m [1m[33m|__________________________________________________________________________________________________^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:4247:5
+     [1m[94m|[0m
+[1m[94m4237[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m4247[0m [1m[94m|[0m [1m[33m/[0m     pub get_category:
+[1m[94m4248[0m [1m[94m|[0m [1m[33m|[0m         ::std::option::Option<unsafe extern "C" fn(ctx: *mut libc::c_void) -> AVClassCategory>,
+     [1m[94m|[0m [1m[33m|______________________________________________________________________________________________^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:4249:5
+     [1m[94m|[0m
+[1m[94m4237[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m4249[0m [1m[94m|[0m [1m[33m/[0m     pub query_ranges: ::std::option::Option<
+[1m[94m4250[0m [1m[94m|[0m [1m[33m|[0m         unsafe extern "C" fn(
+[1m[94m4251[0m [1m[94m|[0m [1m[33m|[0m             arg1: *mut *mut AVOptionRanges,
+[1m[94m4252[0m [1m[94m|[0m [1m[33m|[0m             obj: *mut libc::c_void,
+[1m[94m...[0m    [1m[33m|[0m
+[1m[94m4255[0m [1m[94m|[0m [1m[33m|[0m         ) -> libc::c_int,
+[1m[94m4256[0m [1m[94m|[0m [1m[33m|[0m     >,
+     [1m[94m|[0m [1m[33m|_____^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:4257:5
+     [1m[94m|[0m
+[1m[94m4237[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m4257[0m [1m[94m|[0m [1m[33m/[0m     pub child_next: ::std::option::Option<
+[1m[94m4258[0m [1m[94m|[0m [1m[33m|[0m         unsafe extern "C" fn(obj: *mut libc::c_void, prev: *mut libc::c_void) -> *mut libc::c_void,
+[1m[94m4259[0m [1m[94m|[0m [1m[33m|[0m     >,
+     [1m[94m|[0m [1m[33m|_____^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:4260:5
+     [1m[94m|[0m
+[1m[94m4237[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m4260[0m [1m[94m|[0m [1m[33m/[0m     pub child_class_iterate:
+[1m[94m4261[0m [1m[94m|[0m [1m[33m|[0m         ::std::option::Option<unsafe extern "C" fn(iter: *mut *mut libc::c_void) -> *const AVClass>,
+     [1m[94m|[0m [1m[33m|___________________________________________________________________________________________________^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:5493:5
+     [1m[94m|[0m
+[1m[94m5487[0m [1m[94m|[0m #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                              [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m5493[0m [1m[94m|[0m     pub free: ::std::option::Option<unsafe extern "C" fn(ctx: *mut AVHWDeviceContext)>,
+     [1m[94m|[0m     [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:5526:5
+     [1m[94m|[0m
+[1m[94m5519[0m [1m[94m|[0m #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                              [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m5526[0m [1m[94m|[0m     pub free: ::std::option::Option<unsafe extern "C" fn(ctx: *mut AVHWFramesContext)>,
+     [1m[94m|[0m     [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:8166:5
+     [1m[94m|[0m
+[1m[94m8162[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m8166[0m [1m[94m|[0m [1m[33m/[0m     pub parser_init:
+[1m[94m8167[0m [1m[94m|[0m [1m[33m|[0m         ::std::option::Option<unsafe extern "C" fn(s: *mut AVCodecParserContext) -> libc::c_int>,
+     [1m[94m|[0m [1m[33m|________________________________________________________________________________________________^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:8168:5
+     [1m[94m|[0m
+[1m[94m8162[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m8168[0m [1m[94m|[0m [1m[33m/[0m     pub parser_parse: ::std::option::Option<
+[1m[94m8169[0m [1m[94m|[0m [1m[33m|[0m         unsafe extern "C" fn(
+[1m[94m8170[0m [1m[94m|[0m [1m[33m|[0m             s: *mut AVCodecParserContext,
+[1m[94m8171[0m [1m[94m|[0m [1m[33m|[0m             avctx: *mut AVCodecContext,
+[1m[94m...[0m    [1m[33m|[0m
+[1m[94m8176[0m [1m[94m|[0m [1m[33m|[0m         ) -> libc::c_int,
+[1m[94m8177[0m [1m[94m|[0m [1m[33m|[0m     >,
+     [1m[94m|[0m [1m[33m|_____^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:8178:5
+     [1m[94m|[0m
+[1m[94m8162[0m [1m[94m|[0m #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                              [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m8178[0m [1m[94m|[0m     pub parser_close: ::std::option::Option<unsafe extern "C" fn(s: *mut AVCodecParserContext)>,
+     [1m[94m|[0m     [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:8179:5
+     [1m[94m|[0m
+[1m[94m8162[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m8179[0m [1m[94m|[0m [1m[33m/[0m     pub split: ::std::option::Option<
+[1m[94m8180[0m [1m[94m|[0m [1m[33m|[0m         unsafe extern "C" fn(
+[1m[94m8181[0m [1m[94m|[0m [1m[33m|[0m             avctx: *mut AVCodecContext,
+[1m[94m8182[0m [1m[94m|[0m [1m[33m|[0m             buf: *const u8,
+[1m[94m8183[0m [1m[94m|[0m [1m[33m|[0m             buf_size: libc::c_int,
+[1m[94m8184[0m [1m[94m|[0m [1m[33m|[0m         ) -> libc::c_int,
+[1m[94m8185[0m [1m[94m|[0m [1m[33m|[0m     >,
+     [1m[94m|[0m [1m[33m|_____^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9043:5
+     [1m[94m|[0m
+[1m[94m9041[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m9042[0m [1m[94m|[0m   pub struct AVIOInterruptCB {
+[1m[94m9043[0m [1m[94m|[0m [1m[33m/[0m     pub callback:
+[1m[94m9044[0m [1m[94m|[0m [1m[33m|[0m         ::std::option::Option<unsafe extern "C" fn(arg1: *mut libc::c_void) -> libc::c_int>,
+     [1m[94m|[0m [1m[33m|___________________________________________________________________________________________^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9137:5
+     [1m[94m|[0m
+[1m[94m9129[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m9137[0m [1m[94m|[0m [1m[33m/[0m     pub read_packet: ::std::option::Option<
+[1m[94m9138[0m [1m[94m|[0m [1m[33m|[0m         unsafe extern "C" fn(
+[1m[94m9139[0m [1m[94m|[0m [1m[33m|[0m             opaque: *mut libc::c_void,
+[1m[94m9140[0m [1m[94m|[0m [1m[33m|[0m             buf: *mut u8,
+[1m[94m9141[0m [1m[94m|[0m [1m[33m|[0m             buf_size: libc::c_int,
+[1m[94m9142[0m [1m[94m|[0m [1m[33m|[0m         ) -> libc::c_int,
+[1m[94m9143[0m [1m[94m|[0m [1m[33m|[0m     >,
+     [1m[94m|[0m [1m[33m|_____^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9144:5
+     [1m[94m|[0m
+[1m[94m9129[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m9144[0m [1m[94m|[0m [1m[33m/[0m     pub write_packet: ::std::option::Option<
+[1m[94m9145[0m [1m[94m|[0m [1m[33m|[0m         unsafe extern "C" fn(
+[1m[94m9146[0m [1m[94m|[0m [1m[33m|[0m             opaque: *mut libc::c_void,
+[1m[94m9147[0m [1m[94m|[0m [1m[33m|[0m             buf: *mut u8,
+[1m[94m9148[0m [1m[94m|[0m [1m[33m|[0m             buf_size: libc::c_int,
+[1m[94m9149[0m [1m[94m|[0m [1m[33m|[0m         ) -> libc::c_int,
+[1m[94m9150[0m [1m[94m|[0m [1m[33m|[0m     >,
+     [1m[94m|[0m [1m[33m|_____^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9151:5
+     [1m[94m|[0m
+[1m[94m9129[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m9151[0m [1m[94m|[0m [1m[33m/[0m     pub seek: ::std::option::Option<
+[1m[94m9152[0m [1m[94m|[0m [1m[33m|[0m         unsafe extern "C" fn(opaque: *mut libc::c_void, offset: i64, whence: libc::c_int) -> i64,
+[1m[94m9153[0m [1m[94m|[0m [1m[33m|[0m     >,
+     [1m[94m|[0m [1m[33m|_____^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9162:5
+     [1m[94m|[0m
+[1m[94m9129[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m9162[0m [1m[94m|[0m [1m[33m/[0m     pub update_checksum: ::std::option::Option<
+[1m[94m9163[0m [1m[94m|[0m [1m[33m|[0m         unsafe extern "C" fn(
+[1m[94m9164[0m [1m[94m|[0m [1m[33m|[0m             checksum: libc::c_ulong,
+[1m[94m9165[0m [1m[94m|[0m [1m[33m|[0m             buf: *const u8,
+[1m[94m9166[0m [1m[94m|[0m [1m[33m|[0m             size: libc::c_uint,
+[1m[94m9167[0m [1m[94m|[0m [1m[33m|[0m         ) -> libc::c_ulong,
+[1m[94m9168[0m [1m[94m|[0m [1m[33m|[0m     >,
+     [1m[94m|[0m [1m[33m|_____^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9169:5
+     [1m[94m|[0m
+[1m[94m9129[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m9169[0m [1m[94m|[0m [1m[33m/[0m     pub read_pause: ::std::option::Option<
+[1m[94m9170[0m [1m[94m|[0m [1m[33m|[0m         unsafe extern "C" fn(opaque: *mut libc::c_void, pause: libc::c_int) -> libc::c_int,
+[1m[94m9171[0m [1m[94m|[0m [1m[33m|[0m     >,
+     [1m[94m|[0m [1m[33m|_____^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9172:5
+     [1m[94m|[0m
+[1m[94m9129[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m9172[0m [1m[94m|[0m [1m[33m/[0m     pub read_seek: ::std::option::Option<
+[1m[94m9173[0m [1m[94m|[0m [1m[33m|[0m         unsafe extern "C" fn(
+[1m[94m9174[0m [1m[94m|[0m [1m[33m|[0m             opaque: *mut libc::c_void,
+[1m[94m9175[0m [1m[94m|[0m [1m[33m|[0m             stream_index: libc::c_int,
+[1m[94m...[0m    [1m[33m|[0m
+[1m[94m9178[0m [1m[94m|[0m [1m[33m|[0m         ) -> i64,
+[1m[94m9179[0m [1m[94m|[0m [1m[33m|[0m     >,
+     [1m[94m|[0m [1m[33m|_____^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9184:5
+     [1m[94m|[0m
+[1m[94m9129[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m9184[0m [1m[94m|[0m [1m[33m/[0m     pub write_data_type: ::std::option::Option<
+[1m[94m9185[0m [1m[94m|[0m [1m[33m|[0m         unsafe extern "C" fn(
+[1m[94m9186[0m [1m[94m|[0m [1m[33m|[0m             opaque: *mut libc::c_void,
+[1m[94m9187[0m [1m[94m|[0m [1m[33m|[0m             buf: *mut u8,
+[1m[94m...[0m    [1m[33m|[0m
+[1m[94m9191[0m [1m[94m|[0m [1m[33m|[0m         ) -> libc::c_int,
+[1m[94m9192[0m [1m[94m|[0m [1m[33m|[0m     >,
+     [1m[94m|[0m [1m[33m|_____^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9597:5
+     [1m[94m|[0m
+[1m[94m9585[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m9597[0m [1m[94m|[0m [1m[33m/[0m     pub read_probe:
+[1m[94m9598[0m [1m[94m|[0m [1m[33m|[0m         ::std::option::Option<unsafe extern "C" fn(arg1: *const AVProbeData) -> libc::c_int>,
+     [1m[94m|[0m [1m[33m|____________________________________________________________________________________________^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9599:5
+     [1m[94m|[0m
+[1m[94m9585[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m9599[0m [1m[94m|[0m [1m[33m/[0m     pub read_header:
+[1m[94m9600[0m [1m[94m|[0m [1m[33m|[0m         ::std::option::Option<unsafe extern "C" fn(arg1: *mut AVFormatContext) -> libc::c_int>,
+     [1m[94m|[0m [1m[33m|______________________________________________________________________________________________^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9601:5
+     [1m[94m|[0m
+[1m[94m9585[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m9601[0m [1m[94m|[0m [1m[33m/[0m     pub read_packet: ::std::option::Option<
+[1m[94m9602[0m [1m[94m|[0m [1m[33m|[0m         unsafe extern "C" fn(arg1: *mut AVFormatContext, pkt: *mut AVPacket) -> libc::c_int,
+[1m[94m9603[0m [1m[94m|[0m [1m[33m|[0m     >,
+     [1m[94m|[0m [1m[33m|_____^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9604:5
+     [1m[94m|[0m
+[1m[94m9585[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m9604[0m [1m[94m|[0m [1m[33m/[0m     pub read_close:
+[1m[94m9605[0m [1m[94m|[0m [1m[33m|[0m         ::std::option::Option<unsafe extern "C" fn(arg1: *mut AVFormatContext) -> libc::c_int>,
+     [1m[94m|[0m [1m[33m|______________________________________________________________________________________________^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9606:5
+     [1m[94m|[0m
+[1m[94m9585[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m9606[0m [1m[94m|[0m [1m[33m/[0m     pub read_seek: ::std::option::Option<
+[1m[94m9607[0m [1m[94m|[0m [1m[33m|[0m         unsafe extern "C" fn(
+[1m[94m9608[0m [1m[94m|[0m [1m[33m|[0m             arg1: *mut AVFormatContext,
+[1m[94m9609[0m [1m[94m|[0m [1m[33m|[0m             stream_index: libc::c_int,
+[1m[94m...[0m    [1m[33m|[0m
+[1m[94m9612[0m [1m[94m|[0m [1m[33m|[0m         ) -> libc::c_int,
+[1m[94m9613[0m [1m[94m|[0m [1m[33m|[0m     >,
+     [1m[94m|[0m [1m[33m|_____^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9614:5
+     [1m[94m|[0m
+[1m[94m9585[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m9614[0m [1m[94m|[0m [1m[33m/[0m     pub read_timestamp: ::std::option::Option<
+[1m[94m9615[0m [1m[94m|[0m [1m[33m|[0m         unsafe extern "C" fn(
+[1m[94m9616[0m [1m[94m|[0m [1m[33m|[0m             s: *mut AVFormatContext,
+[1m[94m9617[0m [1m[94m|[0m [1m[33m|[0m             stream_index: libc::c_int,
+[1m[94m...[0m    [1m[33m|[0m
+[1m[94m9620[0m [1m[94m|[0m [1m[33m|[0m         ) -> i64,
+[1m[94m9621[0m [1m[94m|[0m [1m[33m|[0m     >,
+     [1m[94m|[0m [1m[33m|_____^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9622:5
+     [1m[94m|[0m
+[1m[94m9585[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m9622[0m [1m[94m|[0m [1m[33m/[0m     pub read_play:
+[1m[94m9623[0m [1m[94m|[0m [1m[33m|[0m         ::std::option::Option<unsafe extern "C" fn(arg1: *mut AVFormatContext) -> libc::c_int>,
+     [1m[94m|[0m [1m[33m|______________________________________________________________________________________________^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9624:5
+     [1m[94m|[0m
+[1m[94m9585[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m9624[0m [1m[94m|[0m [1m[33m/[0m     pub read_pause:
+[1m[94m9625[0m [1m[94m|[0m [1m[33m|[0m         ::std::option::Option<unsafe extern "C" fn(arg1: *mut AVFormatContext) -> libc::c_int>,
+     [1m[94m|[0m [1m[33m|______________________________________________________________________________________________^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9626:5
+     [1m[94m|[0m
+[1m[94m9585[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m9626[0m [1m[94m|[0m [1m[33m/[0m     pub read_seek2: ::std::option::Option<
+[1m[94m9627[0m [1m[94m|[0m [1m[33m|[0m         unsafe extern "C" fn(
+[1m[94m9628[0m [1m[94m|[0m [1m[33m|[0m             s: *mut AVFormatContext,
+[1m[94m9629[0m [1m[94m|[0m [1m[33m|[0m             stream_index: libc::c_int,
+[1m[94m...[0m    [1m[33m|[0m
+[1m[94m9634[0m [1m[94m|[0m [1m[33m|[0m         ) -> libc::c_int,
+[1m[94m9635[0m [1m[94m|[0m [1m[33m|[0m     >,
+     [1m[94m|[0m [1m[33m|_____^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9636:5
+     [1m[94m|[0m
+[1m[94m9585[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+     [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m9636[0m [1m[94m|[0m [1m[33m/[0m     pub get_device_list: ::std::option::Option<
+[1m[94m9637[0m [1m[94m|[0m [1m[33m|[0m         unsafe extern "C" fn(
+[1m[94m9638[0m [1m[94m|[0m [1m[33m|[0m             s: *mut AVFormatContext,
+[1m[94m9639[0m [1m[94m|[0m [1m[33m|[0m             device_list: *mut AVDeviceInfoList,
+[1m[94m9640[0m [1m[94m|[0m [1m[33m|[0m         ) -> libc::c_int,
+[1m[94m9641[0m [1m[94m|[0m [1m[33m|[0m     >,
+     [1m[94m|[0m [1m[33m|_____^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+     [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+     [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: unnecessary transmute[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9719:18
+     [1m[94m|[0m
+[1m[94m9719[0m [1m[94m|[0m         unsafe { ::std::mem::transmute(self._bitfield_1.get(0usize, 2u8) as u32) }
+     [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: `#[warn(unnecessary_transmutes)]` on by default
+[1m[96mhelp[0m: replace this with
+     [1m[94m|[0m
+[1m[94m9719[0m [91m- [0m        unsafe { [91m::std::mem::transmute[0m(self._bitfield_1.get(0usize, 2u8) as u32) }
+[1m[94m9719[0m [92m+ [0m        unsafe { [92mu32::cast_signed[0m(self._bitfield_1.get(0usize, 2u8) as u32) }
+     [1m[94m|[0m
+
+[1m[33mwarning[0m[1m: unnecessary transmute[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9724:28
+     [1m[94m|[0m
+[1m[94m9724[0m [1m[94m|[0m             let val: u32 = ::std::mem::transmute(val);
+     [1m[94m|[0m                            [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+     [1m[94m|[0m
+[1m[96mhelp[0m: replace this with
+     [1m[94m|[0m
+[1m[94m9724[0m [91m- [0m            let val: u32 = [91m::std::mem::transmute[0m(val);
+[1m[94m9724[0m [92m+ [0m            let val: u32 = [92mi32::cast_unsigned[0m(val);
+     [1m[94m|[0m
+
+[1m[33mwarning[0m[1m: unnecessary transmute[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9731:13
+     [1m[94m|[0m
+[1m[94m9731[0m [1m[94m|[0m [1m[33m/[0m             ::std::mem::transmute(<__BindgenBitfieldUnit<[u8; 4usize]>>::raw_get(
+[1m[94m9732[0m [1m[94m|[0m [1m[33m|[0m                 ::std::ptr::addr_of!((*this)._bitfield_1),
+[1m[94m9733[0m [1m[94m|[0m [1m[33m|[0m                 0usize,
+[1m[94m9734[0m [1m[94m|[0m [1m[33m|[0m                 2u8,
+[1m[94m9735[0m [1m[94m|[0m [1m[33m|[0m             ) as u32)
+     [1m[94m|[0m [1m[33m|_____________________^[0m
+     [1m[94m|[0m
+[1m[96mhelp[0m: replace this with
+     [1m[94m|[0m
+[1m[94m9731[0m [91m- [0m            [91m::std::mem::transmute[0m(<__BindgenBitfieldUnit<[u8; 4usize]>>::raw_get(
+[1m[94m9731[0m [92m+ [0m            [92mu32::cast_signed[0m(<__BindgenBitfieldUnit<[u8; 4usize]>>::raw_get(
+     [1m[94m|[0m
+
+[1m[33mwarning[0m[1m: unnecessary transmute[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9741:28
+     [1m[94m|[0m
+[1m[94m9741[0m [1m[94m|[0m             let val: u32 = ::std::mem::transmute(val);
+     [1m[94m|[0m                            [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+     [1m[94m|[0m
+[1m[96mhelp[0m: replace this with
+     [1m[94m|[0m
+[1m[94m9741[0m [91m- [0m            let val: u32 = [91m::std::mem::transmute[0m(val);
+[1m[94m9741[0m [92m+ [0m            let val: u32 = [92mi32::cast_unsigned[0m(val);
+     [1m[94m|[0m
+
+[1m[33mwarning[0m[1m: unnecessary transmute[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9752:18
+     [1m[94m|[0m
+[1m[94m9752[0m [1m[94m|[0m         unsafe { ::std::mem::transmute(self._bitfield_1.get(2usize, 30u8) as u32) }
+     [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+     [1m[94m|[0m
+[1m[96mhelp[0m: replace this with
+     [1m[94m|[0m
+[1m[94m9752[0m [91m- [0m        unsafe { [91m::std::mem::transmute[0m(self._bitfield_1.get(2usize, 30u8) as u32) }
+[1m[94m9752[0m [92m+ [0m        unsafe { [92mu32::cast_signed[0m(self._bitfield_1.get(2usize, 30u8) as u32) }
+     [1m[94m|[0m
+
+[1m[33mwarning[0m[1m: unnecessary transmute[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9757:28
+     [1m[94m|[0m
+[1m[94m9757[0m [1m[94m|[0m             let val: u32 = ::std::mem::transmute(val);
+     [1m[94m|[0m                            [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+     [1m[94m|[0m
+[1m[96mhelp[0m: replace this with
+     [1m[94m|[0m
+[1m[94m9757[0m [91m- [0m            let val: u32 = [91m::std::mem::transmute[0m(val);
+[1m[94m9757[0m [92m+ [0m            let val: u32 = [92mi32::cast_unsigned[0m(val);
+     [1m[94m|[0m
+
+[1m[33mwarning[0m[1m: unnecessary transmute[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9764:13
+     [1m[94m|[0m
+[1m[94m9764[0m [1m[94m|[0m [1m[33m/[0m             ::std::mem::transmute(<__BindgenBitfieldUnit<[u8; 4usize]>>::raw_get(
+[1m[94m9765[0m [1m[94m|[0m [1m[33m|[0m                 ::std::ptr::addr_of!((*this)._bitfield_1),
+[1m[94m9766[0m [1m[94m|[0m [1m[33m|[0m                 2usize,
+[1m[94m9767[0m [1m[94m|[0m [1m[33m|[0m                 30u8,
+[1m[94m9768[0m [1m[94m|[0m [1m[33m|[0m             ) as u32)
+     [1m[94m|[0m [1m[33m|_____________________^[0m
+     [1m[94m|[0m
+[1m[96mhelp[0m: replace this with
+     [1m[94m|[0m
+[1m[94m9764[0m [91m- [0m            [91m::std::mem::transmute[0m(<__BindgenBitfieldUnit<[u8; 4usize]>>::raw_get(
+[1m[94m9764[0m [92m+ [0m            [92mu32::cast_signed[0m(<__BindgenBitfieldUnit<[u8; 4usize]>>::raw_get(
+     [1m[94m|[0m
+
+[1m[33mwarning[0m[1m: unnecessary transmute[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9774:28
+     [1m[94m|[0m
+[1m[94m9774[0m [1m[94m|[0m             let val: u32 = ::std::mem::transmute(val);
+     [1m[94m|[0m                            [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+     [1m[94m|[0m
+[1m[96mhelp[0m: replace this with
+     [1m[94m|[0m
+[1m[94m9774[0m [91m- [0m            let val: u32 = [91m::std::mem::transmute[0m(val);
+[1m[94m9774[0m [92m+ [0m            let val: u32 = [92mi32::cast_unsigned[0m(val);
+     [1m[94m|[0m
+
+[1m[33mwarning[0m[1m: unnecessary transmute[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9790:39
+     [1m[94m|[0m
+[1m[94m9790[0m [1m[94m|[0m             let flags: u32 = unsafe { ::std::mem::transmute(flags) };
+     [1m[94m|[0m                                       [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+     [1m[94m|[0m
+[1m[96mhelp[0m: replace this with
+     [1m[94m|[0m
+[1m[94m9790[0m [91m- [0m            let flags: u32 = unsafe { [91m::std::mem::transmute[0m(flags) };
+[1m[94m9790[0m [92m+ [0m            let flags: u32 = unsafe { [92mi32::cast_unsigned[0m(flags) };
+     [1m[94m|[0m
+
+[1m[33mwarning[0m[1m: unnecessary transmute[0m
+    [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:9794:38
+     [1m[94m|[0m
+[1m[94m9794[0m [1m[94m|[0m             let size: u32 = unsafe { ::std::mem::transmute(size) };
+     [1m[94m|[0m                                      [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+     [1m[94m|[0m
+[1m[96mhelp[0m: replace this with
+     [1m[94m|[0m
+[1m[94m9794[0m [91m- [0m            let size: u32 = unsafe { [91m::std::mem::transmute[0m(size) };
+[1m[94m9794[0m [92m+ [0m            let size: u32 = unsafe { [92mi32::cast_unsigned[0m(size) };
+     [1m[94m|[0m
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+     [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:10024:5
+      [1m[94m|[0m
+[1m[94m 9961[0m [1m[94m|[0m #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+      [1m[94m|[0m                              [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m10024[0m [1m[94m|[0m     pub control_message_cb: av_format_control_message,
+      [1m[94m|[0m     [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+      [1m[94m|[0m
+      [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+      [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+      [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+     [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:10029:5
+      [1m[94m|[0m
+[1m[94m 9961[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+      [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m10029[0m [1m[94m|[0m [1m[33m/[0m     pub io_open: ::std::option::Option<
+[1m[94m10030[0m [1m[94m|[0m [1m[33m|[0m         unsafe extern "C" fn(
+[1m[94m10031[0m [1m[94m|[0m [1m[33m|[0m             s: *mut AVFormatContext,
+[1m[94m10032[0m [1m[94m|[0m [1m[33m|[0m             pb: *mut *mut AVIOContext,
+[1m[94m...[0m     [1m[33m|[0m
+[1m[94m10036[0m [1m[94m|[0m [1m[33m|[0m         ) -> libc::c_int,
+[1m[94m10037[0m [1m[94m|[0m [1m[33m|[0m     >,
+      [1m[94m|[0m [1m[33m|_____^[0m
+      [1m[94m|[0m
+      [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+      [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+      [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+     [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:10038:5
+      [1m[94m|[0m
+[1m[94m 9961[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+      [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m10038[0m [1m[94m|[0m [1m[33m/[0m     pub io_close:
+[1m[94m10039[0m [1m[94m|[0m [1m[33m|[0m         ::std::option::Option<unsafe extern "C" fn(s: *mut AVFormatContext, pb: *mut AVIOContext)>,
+      [1m[94m|[0m [1m[33m|__________________________________________________________________________________________________^[0m
+      [1m[94m|[0m
+      [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+      [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+      [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+     [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:10044:5
+      [1m[94m|[0m
+[1m[94m 9961[0m [1m[94m|[0m   #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+      [1m[94m|[0m                                [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m10044[0m [1m[94m|[0m [1m[33m/[0m     pub io_close2: ::std::option::Option<
+[1m[94m10045[0m [1m[94m|[0m [1m[33m|[0m         unsafe extern "C" fn(s: *mut AVFormatContext, pb: *mut AVIOContext) -> libc::c_int,
+[1m[94m10046[0m [1m[94m|[0m [1m[33m|[0m     >,
+      [1m[94m|[0m [1m[33m|_____^[0m
+      [1m[94m|[0m
+      [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+      [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+      [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m[1m: function pointer comparisons do not produce meaningful results since their addresses are not guaranteed to be unique[0m
+     [1m[94m--> [0m/home/runner/work/Glide/Glide/target/debug/build/ffmpeg-sys-next-c69c6f677271796c/out/bindings.rs:11379:5
+      [1m[94m|[0m
+[1m[94m11363[0m [1m[94m|[0m #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+      [1m[94m|[0m                              [1m[94m---------[0m [1m[94min this derive macro expansion[0m
+[1m[94m...[0m
+[1m[94m11379[0m [1m[94m|[0m     pub execute: avfilter_execute_func,
+      [1m[94m|[0m     [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+      [1m[94m|[0m
+      [1m[94m= [0m[1mnote[0m: the address of the same function can vary between different codegen units
+      [1m[94m= [0m[1mnote[0m: furthermore, different functions could have the same address after being merged together
+      [1m[94m= [0m[1mnote[0m: for more information visit <https://doc.rust-lang.org/nightly/core/ptr/fn.fn_addr_eq.html>
+
+[1m[33mwarning[0m: `ffmpeg-sys-next` (lib) generated 48 warnings (run `cargo fix --lib -p ffmpeg-sys-next` to apply 10 suggestions)
+[1m[92m   Compiling[0m ffmpeg-next v6.1.1
+[1m[92m   Compiling[0m document-features v0.2.12
+[1m[92m   Compiling[0m pipewire-sys v0.8.0
+[1m[92m   Compiling[0m input-hooks v0.1.0 (/home/runner/work/Glide/Glide/crates/input-hooks)
+[1m[91merror[E0433][0m[1m: cannot find `Win32` in `windows`[0m
+ [1m[94m--> [0mcrates/input-hooks/src/accessibility.rs:1:14
+  [1m[94m|[0m
+[1m[94m1[0m [1m[94m|[0m use windows::Win32::UI::WindowsAndMessaging::{SystemParametersInfoW, SPI_GETSTICKYKEYS, SPI_GETFILTERKEYS};
+  [1m[94m|[0m              [1m[91m^^^^^[0m [1m[91mcould not find `Win32` in `windows`[0m
+
+[1m[91merror[E0433][0m[1m: cannot find `Win32` in `windows`[0m
+ [1m[94m--> [0mcrates/input-hooks/src/accessibility.rs:2:14
+  [1m[94m|[0m
+[1m[94m2[0m [1m[94m|[0m use windows::Win32::UI::Accessibility::{STICKYKEYS, FILTERKEYS};
+  [1m[94m|[0m              [1m[91m^^^^^[0m [1m[91mcould not find `Win32` in `windows`[0m
+
+[1m[91merror[E0433][0m[1m: cannot find `Win32` in `windows`[0m
+ [1m[94m--> [0mcrates/input-hooks/src/hook.rs:7:14
+  [1m[94m|[0m
+[1m[94m7[0m [1m[94m|[0m use windows::Win32::Foundation::{LPARAM, LRESULT, WPARAM};
+  [1m[94m|[0m              [1m[91m^^^^^[0m [1m[91mcould not find `Win32` in `windows`[0m
+
+[1m[91merror[E0433][0m[1m: cannot find `Win32` in `windows`[0m
+ [1m[94m--> [0mcrates/input-hooks/src/hook.rs:8:14
+  [1m[94m|[0m
+[1m[94m8[0m [1m[94m|[0m use windows::Win32::UI::Input::KeyboardAndMouse::{VK_CONTROL, VK_LCONTROL, VK_LSHIFT, VK_RCONTROL, VK_RSHIFT, VK_SHIFT};
+  [1m[94m|[0m              [1m[91m^^^^^[0m [1m[91mcould not find `Win32` in `windows`[0m
+
+[1m[91merror[E0433][0m[1m: cannot find `Win32` in `windows`[0m
+ [1m[94m--> [0mcrates/input-hooks/src/hook.rs:9:14
+  [1m[94m|[0m
+[1m[94m9[0m [1m[94m|[0m use windows::Win32::UI::WindowsAndMessaging::{
+  [1m[94m|[0m              [1m[91m^^^^^[0m [1m[91mcould not find `Win32` in `windows`[0m
+
+[1m[91merror[E0433][0m[1m: cannot find `Win32` in `windows`[0m
+ [1m[94m--> [0mcrates/input-hooks/src/cursor.rs:3:14
+  [1m[94m|[0m
+[1m[94m3[0m [1m[94m|[0m use windows::Win32::UI::WindowsAndMessaging::GetCursorPos;
+  [1m[94m|[0m              [1m[91m^^^^^[0m [1m[91mcould not find `Win32` in `windows`[0m
+
+[1m[91merror[E0433][0m[1m: cannot find `Win32` in `windows`[0m
+ [1m[94m--> [0mcrates/input-hooks/src/cursor.rs:4:14
+  [1m[94m|[0m
+[1m[94m4[0m [1m[94m|[0m use windows::Win32::Foundation::POINT;
+  [1m[94m|[0m              [1m[91m^^^^^[0m [1m[91mcould not find `Win32` in `windows`[0m
+
+[1mFor more information about this error, try `rustc --explain E0433`.[0m
+[1m[91merror[0m: could not compile `input-hooks` (lib) due to 7 previous errors
+[1m[33mwarning[0m: build failed, waiting for other jobs to finish...
