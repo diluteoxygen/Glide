@@ -5,12 +5,13 @@ use ffmpeg_next as ffmpeg;
 use crate::{EncodeError, EncodedPacket};
 
 pub struct VideoEncoder {
-    pub(crate) encoder: ffmpeg::codec::encoder::video::Encoder,
+    pub encoder: ffmpeg::codec::encoder::video::Encoder,
     scaler: ffmpeg::software::scaling::Context,
     frame_index: i64,
     width: u32,
     height: u32,
-    pub(crate) time_base: ffmpeg::Rational,
+    pub time_base: ffmpeg::Rational,
+    last_pts: i64,
 }
 
 impl VideoEncoder {
@@ -94,6 +95,7 @@ impl VideoEncoder {
             } else {
                 ffmpeg::Rational(1, 1_000_000)
             },
+            last_pts: -1,
         })
     }
 
@@ -130,8 +132,13 @@ impl VideoEncoder {
             .map_err(|e| EncodeError::Encoding(format!("Scaler failed: {}", e)))?;
 
         let time_base = self.time_base;
-        let pts = (frame.timestamp_us as i64 * time_base.denominator() as i64) / (time_base.numerator() as i64 * 1_000_000);
+        let mut pts = (frame.timestamp_us as i64 * time_base.denominator() as i64) / (time_base.numerator() as i64 * 1_000_000);
         
+        if pts <= self.last_pts {
+            pts = self.last_pts + 1;
+        }
+        self.last_pts = pts;
+
         nv12_avframe.set_pts(Some(pts));
 
         self.encoder.send_frame(&nv12_avframe).map_err(|e| {

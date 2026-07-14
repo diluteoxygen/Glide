@@ -4,3 +4,15 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+bytemuck = { version = "1.25.1", features = ["derive"] }
+camera = { version = "0.1.0", path = "../camera" }
+capture-core = { version = "0.1.0", path = "../capture-core" }
+crossbeam-channel = "0.5.16"
+encode = { version = "0.1.0", path = "../encode" }
+ffmpeg-next = "6.1.1"
+mux = { version = "0.1.0", path = "../mux" }
+pollster = "1.0.1"
+serde_json = "1.0.150"
+thiserror = "2.0.18"
+tracing = "0.1.44"
+wgpu = "0.20"

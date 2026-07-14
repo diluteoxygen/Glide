@@ -33,6 +33,16 @@ fn main() {
     } else if args.contains(&"--video-test".to_string()) {
         let dump_frame = args.contains(&"--dump-frame".to_string());
         run_video_test(dump_frame);
+    } else if let Some(idx) = args.iter().position(|a| a == "solve") {
+        let log_file = args.get(idx + 1).expect("Expected .events.jsonl file path after 'solve'");
+        run_solver(log_file);
+    } else if let Some(idx) = args.iter().position(|a| a == "render") {
+        let input_mkv = args.get(idx + 1).expect("Expected input .mkv");
+        let input_log = args.get(idx + 2).expect("Expected input .events.jsonl");
+        let output_mp4 = args.get(idx + 3).expect("Expected output .mp4");
+        info!("Rendering {} using {} -> {}", input_mkv, input_log, output_mp4);
+        render::render_video(input_mkv, input_log, output_mp4).expect("Render failed");
+        info!("Render complete!");
     } else {
         run_full_pipeline();
     }
@@ -69,7 +79,10 @@ fn run_full_pipeline() {
     let start_time = Arc::new(AtomicU64::new(u64::MAX));
 
     let args: Vec<String> = env::args().collect();
-    let output_file = args.iter().find(|a| a.ends_with(".mkv")).cloned().unwrap_or_else(|| "output.mkv".to_string());
+    let output_file = args.iter()
+        .find(|a| a.ends_with(".mkv") || a.ends_with(".mp4"))
+        .cloned()
+        .unwrap_or_else(|| "output.mkv".to_string());
 
     // Spawn Muxer
     let muxer = mux::Muxer::new(rx_mux, rx_params, output_file.clone()).expect("Failed to init muxer");
@@ -339,4 +352,34 @@ fn run_video_test(dump_frame: bool) {
     info!("Total Received: {}", received_frames);
     info!("Total Dropped:  {}", total_dropped);
     info!("Average FPS:    {:.1}", total_fps);
+}
+
+fn run_solver(log_file: &str) {
+    info!("--- CAMERA SOLVER ---");
+    let content = std::fs::read_to_string(log_file).expect("Failed to read log file");
+    let mut events = Vec::new();
+    for line in content.lines() {
+        if let Ok(entry) = serde_json::from_str::<camera::LogEntry>(line) {
+            events.push(entry);
+        }
+    }
+    info!("Loaded {} events", events.len());
+
+    let mut camera = camera::solver::VirtualCamera::new(0.0, 0.0);
+    
+    // Simulate a 60fps framerate for 10 seconds
+    let dt = 1.0 / 60.0;
+    let mut time_us = 0;
+    let step_us = (dt * 1_000_000.0) as u64;
+
+    for i in 0..600 {
+        let (tx, ty, tz) = camera.compute_target(time_us, &events);
+        let (x, y, z) = camera.step(dt, tx, ty, tz);
+        
+        if i % 30 == 0 { // Print twice a second
+            info!("t={:.2}s | target: ({:>4.0}, {:>4.0}, {:.1}x) | camera: ({:>4.0}, {:>4.0}, {:.2}x)", 
+                time_us as f64 / 1_000_000.0, tx, ty, tz, x, y, z);
+        }
+        time_us += step_us;
+    }
 }
