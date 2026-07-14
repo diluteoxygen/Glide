@@ -68,10 +68,10 @@ fn run_full_pipeline() {
         PipeWireAudioCapturer::new(AudioTrack::Microphone).expect("Failed to init mic audio"),
     );
 
-    let (tx_vid, rx_vid) = crossbeam_channel::bounded::<Frame>(5);
-    let (tx_sys, rx_sys) = crossbeam_channel::bounded::<AudioFrame>(100);
-    let (tx_mic, rx_mic) = crossbeam_channel::bounded::<AudioFrame>(100);
-    let (tx_mux, rx_mux) = crossbeam_channel::bounded::<encode::EncodedPacket>(1000);
+    let (tx_vid, rx_vid) = crossbeam_channel::bounded::<Frame>(60);
+    let (tx_sys, rx_sys) = crossbeam_channel::bounded::<AudioFrame>(500);
+    let (tx_mic, rx_mic) = crossbeam_channel::bounded::<AudioFrame>(500);
+    let (tx_mux, rx_mux) = crossbeam_channel::bounded::<encode::EncodedPacket>(5000);
     let (tx_params, rx_params) = crossbeam_channel::bounded::<encode::CodecParameters>(1);
 
     let stop = Arc::new(AtomicBool::new(false));
@@ -100,7 +100,7 @@ fn run_full_pipeline() {
 
     // OTF Pipeline Check
     let encoder_rx_vid = if is_otf {
-        let (tx_vid_comp, rx_vid_comp) = crossbeam_channel::bounded::<Frame>(5);
+        let (tx_vid_comp, rx_vid_comp) = crossbeam_channel::bounded::<Frame>(60);
         let event_rx = input_hooks::InputHook::start();
         
         info!("Spawning Live Compositor...");
