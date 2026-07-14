@@ -1,5 +1,13 @@
 use std::borrow::Cow;
+use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::thread;
 use wgpu::util::DeviceExt;
+
+use capture_core::Frame;
+use crossbeam_channel::{Receiver, Sender};
+use input_hooks::OtfInputEvent;
+use otf_camera::OtfCameraEngine;
 
 #[repr(C)]
 #[derive(Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
@@ -7,7 +15,7 @@ struct Uniforms {
     transform: [f32; 16],
 }
 
-pub struct Compositor {
+pub struct LiveCompositor {
     device: wgpu::Device,
     queue: wgpu::Queue,
     pipeline: wgpu::RenderPipeline,
@@ -21,7 +29,7 @@ pub struct Compositor {
     height: u32,
 }
 
-impl Compositor {
+impl LiveCompositor {
     pub fn new(width: u32, height: u32) -> Self {
         let instance = wgpu::Instance::new(wgpu::InstanceDescriptor {
             backends: wgpu::Backends::all(),
@@ -36,7 +44,7 @@ impl Compositor {
 
         let (device, queue) = pollster::block_on(adapter.request_device(
             &wgpu::DeviceDescriptor {
-                label: Some("Compositor Device"),
+                label: Some("Live Compositor Device"),
                 required_features: wgpu::Features::empty(),
                 required_limits: wgpu::Limits::default(),
             },
@@ -67,7 +75,6 @@ impl Compositor {
         };
         let target_texture = device.create_texture(&target_desc);
 
-        // Readback buffer needs to be padded to 256 bytes per row for wgpu copy
         let align = wgpu::COPY_BYTES_PER_ROW_ALIGNMENT;
         let unpadded_bytes_per_row = width * 4;
         let padding = (align - unpadded_bytes_per_row % align) % align;
@@ -188,7 +195,6 @@ impl Compositor {
     }
 
     pub fn render_frame(&mut self, bgra_data: &[u8], stride: u32, zoom: f32, target_x: f32, target_y: f32) -> Vec<u8> {
-        // Upload new frame
         self.queue.write_texture(
             wgpu::ImageCopyTexture {
                 texture: &self.source_texture,
@@ -209,10 +215,6 @@ impl Compositor {
             },
         );
 
-        // Update transform
-        // target_x/y are in pixel coordinates from top-left.
-        // We need to map them to normalized device coordinates (-1 to 1).
-        // scale first, then translate.
         let transform = compositor_core::calculate_transform(target_x, target_y, zoom, self.width, self.height);
         self.queue.write_buffer(&self.uniform_buffer, 0, bytemuck::cast_slice(&[Uniforms { transform }]));
 
@@ -257,7 +259,7 @@ impl Compositor {
             });
             rpass.set_pipeline(&self.pipeline);
             rpass.set_bind_group(0, &bind_group, &[]);
-            rpass.draw(0..6, 0..1); // draw 2 triangles (6 vertices)
+            rpass.draw(0..6, 0..1);
         }
 
         let align = wgpu::COPY_BYTES_PER_ROW_ALIGNMENT;
@@ -289,7 +291,6 @@ impl Compositor {
 
         self.queue.submit(Some(encoder.finish()));
 
-        // Readback
         let buffer_slice = self.readback_buffer.slice(..);
         let (tx, rx) = std::sync::mpsc::channel();
         buffer_slice.map_async(wgpu::MapMode::Read, move |result| {
@@ -301,7 +302,6 @@ impl Compositor {
 
         let data = buffer_slice.get_mapped_range();
         
-        // Strip padding if necessary
         let mut result = Vec::with_capacity((self.width * self.height * 4) as usize);
         if padding == 0 {
             result.extend_from_slice(&data);
@@ -317,6 +317,56 @@ impl Compositor {
         self.readback_buffer.unmap();
         
         result
+    }
+
+    /// Spawns the live compositor thread, pumping frames from `rx_vid` to `tx_vid_out`, 
+    /// pulling state from `event_rx`.
+    pub fn start(
+        rx_vid: Receiver<Frame>,
+        tx_vid_out: Sender<Frame>,
+        event_rx: Receiver<OtfInputEvent>,
+        tx_overlay: Sender<(i32, i32, i32, i32, bool)>,
+        stop: Arc<AtomicBool>,
+    ) {
+        thread::spawn(move || {
+            let mut compositor = None;
+            let mut engine = None;
+
+            while !stop.load(Ordering::Relaxed) {
+                if let Ok(mut frame) = rx_vid.recv_timeout(std::time::Duration::from_millis(100)) {
+                    // Initialize lazily based on first frame dimensions
+                    if compositor.is_none() {
+                        compositor = Some(LiveCompositor::new(frame.width, frame.height));
+                        engine = Some(OtfCameraEngine::new(frame.width as f32, frame.height as f32));
+                    }
+
+                    if let (Some(comp), Some(eng)) = (compositor.as_mut(), engine.as_mut()) {
+                        let (x, y, zoom) = eng.tick(&event_rx);
+                        
+                        // Send overlay update
+                        let is_zoomed = matches!(eng.state, otf_camera::state_machine::CameraState::Zoomed { .. });
+                        let view_w = (frame.width as f32 / zoom) as i32;
+                        let view_h = (frame.height as f32 / zoom) as i32;
+                        let left = (x as i32 - view_w / 2).clamp(0, frame.width as i32 - view_w);
+                        let top = (y as i32 - view_h / 2).clamp(0, frame.height as i32 - view_h);
+                        
+                        // Overwrite previous messages to avoid lag? Actually just send, the receiver will drain.
+                        let _ = tx_overlay.try_send((left, top, left + view_w, top + view_h, is_zoomed));
+
+                        let stride = frame.width * 4;
+                        let new_data = comp.render_frame(&frame.data, stride, zoom, x, y);
+                        
+                        // Output frame is identical to input in dims, just visually zoomed
+                        frame.data = new_data;
+                        
+                        let _ = tx_vid_out.send(frame);
+                    } else {
+                        // Fallback (shouldn't happen)
+                        let _ = tx_vid_out.send(frame);
+                    }
+                }
+            }
+        });
     }
 }
 

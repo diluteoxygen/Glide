@@ -1,5 +1,5 @@
 use crate::event_log::{LogEntry, MouseEvent};
-use super::spring::SecondOrderSystem;
+use camera_core::SecondOrderSystem;
 
 pub struct VirtualCamera {
     x_spring: SecondOrderSystem,
