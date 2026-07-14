@@ -2064,6 +2064,11 @@ dependencies = [
 [[package]]
 name = "otf-camera"
 version = "0.1.0"
+dependencies = [
+ "camera-core",
+ "crossbeam-channel",
+ "input-hooks",
+]
 
 [[package]]
 name = "otf-compositor"
