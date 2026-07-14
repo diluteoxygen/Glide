@@ -80,6 +80,7 @@ fn run_full_pipeline() {
 
     let args: Vec<String> = env::args().collect();
     let is_otf = args.contains(&"--otf".to_string());
+    let no_overlay = args.contains(&"--no-overlay".to_string());
     let output_file = args.iter()
         .find(|a| a.ends_with(".mkv") || a.ends_with(".mp4"))
         .cloned()
@@ -104,7 +105,9 @@ fn run_full_pipeline() {
         let event_rx = input_hooks::InputHook::start();
         
         let (tx_overlay, rx_overlay) = crossbeam_channel::bounded(60);
-        otf_overlay::OtfOverlay::start(rx_overlay, Arc::clone(&stop));
+        if !no_overlay {
+            otf_overlay::OtfOverlay::start(rx_overlay, Arc::clone(&stop));
+        }
 
         info!("Spawning Live Compositor...");
         otf_compositor::LiveCompositor::start(
