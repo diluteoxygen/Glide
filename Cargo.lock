@@ -1519,6 +1519,11 @@ dependencies = [
 [[package]]
 name = "input-hooks"
 version = "0.1.0"
+dependencies = [
+ "crossbeam-channel",
+ "lazy_static",
+ "windows 0.58.0",
+]
 
 [[package]]
 name = "interpolate_name"
