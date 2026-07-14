@@ -9,6 +9,11 @@ members = [
     "crates/cli",
     "crates/camera",
     "crates/render",
+    "crates/camera-core",
+    "crates/compositor-core",
+    "crates/input-hooks",
+    "crates/otf-camera",
+    "crates/otf-compositor",
 ]
 
 [patch.crates-io]

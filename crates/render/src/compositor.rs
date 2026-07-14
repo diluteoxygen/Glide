@@ -130,7 +130,7 @@ impl Compositor {
 
         let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
             label: Some("Shader"),
-            source: wgpu::ShaderSource::Wgsl(Cow::Borrowed(include_str!("shader.wgsl"))),
+            source: wgpu::ShaderSource::Wgsl(Cow::Borrowed(compositor_core::SHADER_WGSL)),
         });
 
         let pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
@@ -213,34 +213,7 @@ impl Compositor {
         // target_x/y are in pixel coordinates from top-left.
         // We need to map them to normalized device coordinates (-1 to 1).
         // scale first, then translate.
-        
-        // Convert to normalized coordinates (0 to 1)
-        let nx = target_x / self.width as f32;
-        let ny = target_y / self.height as f32;
-        
-        // Unscaled geometry pos corresponding to target
-        let pos_x = nx * 2.0 - 1.0;
-        let pos_y = -(ny * 2.0 - 1.0); // Y is flipped in clip space
-        
-        let mut tx = -pos_x * zoom;
-        let mut ty = -pos_y * zoom;
-        
-        // Clamp to avoid showing black borders
-        let max_t = zoom - 1.0;
-        if max_t > 0.0 {
-            tx = tx.clamp(-max_t, max_t);
-            ty = ty.clamp(-max_t, max_t);
-        } else {
-            tx = 0.0;
-            ty = 0.0;
-        }
-
-        let transform = [
-            zoom, 0.0,  0.0, 0.0,
-            0.0,  zoom, 0.0, 0.0,
-            0.0,  0.0,  1.0, 0.0,
-            tx,   ty,   0.0, 1.0,
-        ];
+        let transform = compositor_core::calculate_transform(target_x, target_y, zoom, self.width, self.height);
         self.queue.write_buffer(&self.uniform_buffer, 0, bytemuck::cast_slice(&[Uniforms { transform }]));
 
         let view = self.source_texture.create_view(&wgpu::TextureViewDescriptor::default());

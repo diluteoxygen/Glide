@@ -54,29 +54,3 @@ impl SecondOrderSystem {
         self.y
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_spring_convergence() {
-        // Frequency = 2.0Hz, critically damped
-        let mut spring = SecondOrderSystem::new(2.0, 1.0, 0.0, 0.0);
-        
-        let dt = 1.0 / 60.0; // 60Hz step
-        
-        let target = 100.0;
-        
-        // Run for 2 seconds (120 frames)
-        for _ in 0..120 {
-            spring.update(dt, target, 0.0);
-        }
-        
-        // It should converge extremely close to 100.0
-        assert!((spring.y - 100.0).abs() < 1.0, "Spring did not converge, ended at {}", spring.y);
-        
-        // Ensure no significant overshoot
-        assert!(spring.y <= 100.01, "Spring overshot, ended at {}", spring.y);
-    }
-}

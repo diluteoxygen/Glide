@@ -7,6 +7,7 @@ edition = "2021"
 bytemuck = { version = "1.25.1", features = ["derive"] }
 camera = { version = "0.1.0", path = "../camera" }
 capture-core = { version = "0.1.0", path = "../capture-core" }
+compositor-core = { version = "0.1.0", path = "../compositor-core" }
 crossbeam-channel = "0.5.16"
 encode = { version = "0.1.0", path = "../encode" }
 ffmpeg-next = "6.1.1"

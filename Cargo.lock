@@ -484,6 +484,7 @@ checksum = "fc652a48c352aef3ea3aed32080501cf3ef6ed5da78602a020c991775b0aff04"
 name = "camera"
 version = "0.1.0"
 dependencies = [
+ "camera-core",
  "crossbeam-channel",
  "parking_lot",
  "serde",
@@ -491,6 +492,10 @@ dependencies = [
  "tracing",
  "windows 0.58.0",
 ]
+
+[[package]]
+name = "camera-core"
+version = "0.1.0"
 
 [[package]]
 name = "capture-core"
@@ -652,6 +657,10 @@ dependencies = [
  "quote",
  "syn 1.0.109",
 ]
+
+[[package]]
+name = "compositor-core"
+version = "0.1.0"
 
 [[package]]
 name = "concurrent-queue"
@@ -1508,6 +1517,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "input-hooks"
+version = "0.1.0"
+
+[[package]]
 name = "interpolate_name"
 version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2044,6 +2057,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "otf-camera"
+version = "0.1.0"
+
+[[package]]
+name = "otf-compositor"
+version = "0.1.0"
+
+[[package]]
 name = "parking"
 version = "2.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2501,6 +2522,7 @@ dependencies = [
  "bytemuck",
  "camera",
  "capture-core",
+ "compositor-core",
  "crossbeam-channel",
  "encode",
  "ffmpeg-next",
