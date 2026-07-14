@@ -325,6 +325,7 @@ impl LiveCompositor {
         rx_vid: Receiver<Frame>,
         tx_vid_out: Sender<Frame>,
         event_rx: Receiver<OtfInputEvent>,
+        tx_overlay: Sender<(i32, i32, i32, i32, bool)>,
         stop: Arc<AtomicBool>,
     ) {
         thread::spawn(move || {
@@ -342,6 +343,16 @@ impl LiveCompositor {
                     if let (Some(comp), Some(eng)) = (compositor.as_mut(), engine.as_mut()) {
                         let (x, y, zoom) = eng.tick(&event_rx);
                         
+                        // Send overlay update
+                        let is_zoomed = matches!(eng.state, otf_camera::state_machine::CameraState::Zoomed { .. });
+                        let view_w = (frame.width as f32 / zoom) as i32;
+                        let view_h = (frame.height as f32 / zoom) as i32;
+                        let left = (x as i32 - view_w / 2).clamp(0, frame.width as i32 - view_w);
+                        let top = (y as i32 - view_h / 2).clamp(0, frame.height as i32 - view_h);
+                        
+                        // Overwrite previous messages to avoid lag? Actually just send, the receiver will drain.
+                        let _ = tx_overlay.try_send((left, top, left + view_w, top + view_h, is_zoomed));
+
                         let stride = frame.width * 4;
                         let new_data = comp.render_frame(&frame.data, stride, zoom, x, y);
                         

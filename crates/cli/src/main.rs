@@ -103,11 +103,15 @@ fn run_full_pipeline() {
         let (tx_vid_comp, rx_vid_comp) = crossbeam_channel::bounded::<Frame>(60);
         let event_rx = input_hooks::InputHook::start();
         
+        let (tx_overlay, rx_overlay) = crossbeam_channel::bounded(60);
+        otf_overlay::OtfOverlay::start(rx_overlay, Arc::clone(&stop));
+
         info!("Spawning Live Compositor...");
         otf_compositor::LiveCompositor::start(
             rx_vid,
             tx_vid_comp,
             event_rx,
+            tx_overlay,
             Arc::clone(&stop)
         );
         rx_vid_comp

@@ -605,6 +605,7 @@ dependencies = [
  "input-hooks",
  "mux",
  "otf-compositor",
+ "otf-overlay",
  "render",
  "serde_json",
  "sysinfo",
@@ -2085,6 +2086,15 @@ dependencies = [
  "otf-camera",
  "pollster 0.3.0",
  "wgpu",
+]
+
+[[package]]
+name = "otf-overlay"
+version = "0.1.0"
+dependencies = [
+ "crossbeam-channel",
+ "tracing",
+ "windows 0.58.0",
 ]
 
 [[package]]
