@@ -2070,6 +2070,7 @@ dependencies = [
  "camera-core",
  "crossbeam-channel",
  "input-hooks",
+ "tracing",
 ]
 
 [[package]]

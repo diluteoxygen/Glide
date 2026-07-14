@@ -50,12 +50,20 @@ impl OtfCameraEngine {
         self.last_tick = now;
 
         // Drain all pending events
+        let prev_state = self.state;
         while let Ok(event) = event_rx.try_recv() {
             if let OtfInputEvent::CursorMoved(x, y) = event {
                 self.last_cursor_x = x as f32;
                 self.last_cursor_y = y as f32;
             }
             self.state.apply_event(event);
+        }
+
+        if self.state != prev_state {
+            match self.state {
+                CameraState::Idle => tracing::info!("OTF State Changed: Idle (Zoom 1.0x)"),
+                CameraState::Zoomed { level } => tracing::info!("OTF State Changed: Zoomed to {:.2}x", level),
+            }
         }
 
         // Determine targets based on state
