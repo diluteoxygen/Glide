@@ -79,18 +79,44 @@ fn run_full_pipeline() {
     let start_time = Arc::new(AtomicU64::new(u64::MAX));
 
     let args: Vec<String> = env::args().collect();
+    let is_otf = args.contains(&"--otf".to_string());
     let output_file = args.iter()
         .find(|a| a.ends_with(".mkv") || a.ends_with(".mp4"))
         .cloned()
         .unwrap_or_else(|| "output.mkv".to_string());
+
+    if is_otf {
+        info!("OTF Mode Enabled. Checking Accessibility Keys...");
+        if input_hooks::are_accessibility_keys_enabled() {
+            tracing::error!("Cannot start OTF recording because Sticky Keys or Filter Keys are enabled. Please disable them in Windows Settings.");
+            std::process::exit(1);
+        }
+    }
 
     // Spawn Muxer
     let muxer = mux::Muxer::new(rx_mux, rx_params, output_file.clone()).expect("Failed to init muxer");
     let stop_mux = Arc::clone(&stop);
     let mux_thread = thread::spawn(move || muxer.start(stop_mux));
 
+    // OTF Pipeline Check
+    let encoder_rx_vid = if is_otf {
+        let (tx_vid_comp, rx_vid_comp) = crossbeam_channel::bounded::<Frame>(5);
+        let event_rx = input_hooks::InputHook::start();
+        
+        info!("Spawning Live Compositor...");
+        otf_compositor::LiveCompositor::start(
+            rx_vid,
+            tx_vid_comp,
+            event_rx,
+            Arc::clone(&stop)
+        );
+        rx_vid_comp
+    } else {
+        rx_vid
+    };
+
     // Spawn Encoder
-    let encoder = encode::Encoder::new(rx_vid, rx_sys, rx_mic, tx_mux, tx_params).expect("Failed to init encoder");
+    let encoder = encode::Encoder::new(encoder_rx_vid, rx_sys, rx_mic, tx_mux, tx_params).expect("Failed to init encoder");
     let stop_enc = Arc::clone(&stop);
     let enc_thread = thread::spawn(move || encoder.start(stop_enc));
 

@@ -12,6 +12,8 @@ image = "0.25"
 hound = "3.5"
 encode = { path = "../encode" }
 mux = { path = "../mux" }
+otf-compositor = { path = "../otf-compositor" }
+input-hooks = { path = "../input-hooks" }
 crossbeam-channel = "0.5"
 sysinfo = "0.30"
 camera = { path = "../camera" }
