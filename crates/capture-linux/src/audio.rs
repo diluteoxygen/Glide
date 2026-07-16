@@ -15,6 +15,10 @@ impl PipeWireAudioCapturer {
         // Placeholder for PipeWire audio stream initialization
         Ok(Self { track })
     }
+
+    pub fn enumerate_microphones() -> Result<Vec<String>, CaptureError> {
+        Ok(vec!["Default Microphone".to_string()])
+    }
 }
 
 impl AudioCapturer for PipeWireAudioCapturer {

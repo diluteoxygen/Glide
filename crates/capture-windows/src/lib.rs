@@ -53,7 +53,7 @@ impl DxgiCapturer {
             D3D11CreateDevice(
                 None,
                 D3D_DRIVER_TYPE_HARDWARE,
-                None,
+                Default::default(),
                 D3D11_CREATE_DEVICE_FLAG(0),
                 Some(&[D3D_FEATURE_LEVEL_11_0]),
                 D3D11_SDK_VERSION,
@@ -232,9 +232,9 @@ impl VideoCapturer for DxgiCapturer {
                                 };
                                 if GetCursorInfo(&mut ci).is_ok() && ci.flags == CURSOR_SHOWING {
                                     let mut ii = ICONINFO::default();
-                                    if GetIconInfo(ci.hCursor, &mut ii).is_ok() {
+                                    if GetIconInfo(ci.hCursor.into(), &mut ii).is_ok() {
                                         let mut bm = BITMAP::default();
-                                        if GetObjectW(ii.hbmMask, std::mem::size_of::<BITMAP>() as i32, Some(&mut bm as *mut _ as *mut c_void)) != 0 {
+                                        if GetObjectW(ii.hbmMask.into(), std::mem::size_of::<BITMAP>() as i32, Some(&mut bm as *mut _ as *mut c_void)) != 0 {
                                             let width = bm.bmWidth;
                                             let height = if ii.hbmColor.is_invalid() { bm.bmHeight / 2 } else { bm.bmHeight };
 
@@ -271,10 +271,10 @@ impl VideoCapturer for DxgiCapturer {
                                                     ..Default::default()
                                                 };
                                                 let mut p_bits: *mut c_void = std::ptr::null_mut();
-                                                let hbm = CreateDIBSection(hdc, &bmi as *const _ as *const BITMAPINFO, DIB_RGB_COLORS, &mut p_bits, None, 0);
+                                                let hbm = CreateDIBSection(Some(hdc), &bmi as *const _ as *const BITMAPINFO, DIB_RGB_COLORS, &mut p_bits, None, 0);
                                                 
                                                 if let Ok(hbm) = hbm {
-                                                    let old_hbm = SelectObject(hdc, hbm);
+                                                    let old_hbm = SelectObject(hdc, hbm.into());
 
                                                     // Copy valid patch from frame buffer to DIB
                                                     let p_bits_u8 = p_bits as *mut u8;
@@ -291,7 +291,7 @@ impl VideoCapturer for DxgiCapturer {
                                                     }
 
                                                     // Draw cursor onto DIB
-                                                    let _ = DrawIconEx(hdc, 0, 0, ci.hCursor, width, height, 0, None, DI_NORMAL);
+                                                    let _ = DrawIconEx(hdc, 0, 0, ci.hCursor.into(), width, height, 0, None, DI_NORMAL);
 
                                                     // Copy patch back to frame buffer
                                                     for y in 0..patch_h {
@@ -307,16 +307,16 @@ impl VideoCapturer for DxgiCapturer {
                                                     }
 
                                                     SelectObject(hdc, old_hbm);
-                                                    let _ = DeleteObject(hbm);
+                                                    let _ = DeleteObject(hbm.into());
                                                 }
                                                 let _ = DeleteDC(hdc);
                                             }
                                         }
                                         if !ii.hbmColor.is_invalid() {
-                                            let _ = DeleteObject(ii.hbmColor);
+                                            let _ = DeleteObject(ii.hbmColor.into());
                                         }
                                         if !ii.hbmMask.is_invalid() {
-                                            let _ = DeleteObject(ii.hbmMask);
+                                            let _ = DeleteObject(ii.hbmMask.into());
                                         }
                                     }
                                 }

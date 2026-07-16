@@ -4,29 +4,33 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-eframe = "0.27"
-tray-icon = "0.13"
-global-hotkey = "0.4"
+eframe = "0.34"
+egui = "0.34"
 rfd = "0.14"
-crossbeam-channel = "0.5"
-tracing = "0.1"
-tracing-subscriber = "0.3"
-sysinfo = "0.30"
-parking_lot = "0.12"
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
 
 capture-core = { path = "../capture-core" }
-camera-core = { path = "../camera-core" }
-camera = { path = "../camera" }
+thiserror = "1.0"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+image = "0.25"
+hound = "3.5"
 encode = { path = "../encode" }
 mux = { path = "../mux" }
 otf-compositor = { path = "../otf-compositor" }
 otf-overlay = { path = "../otf-overlay" }
 input-hooks = { path = "../input-hooks" }
+crossbeam-channel = "0.5"
+sysinfo = "0.30"
+camera = { path = "../camera" }
+serde_json = "1.0.150"
+render = { version = "0.1.0", path = "../render" }
+egui-phosphor = "0.12"
+tray-icon = "0.24.1"
+egui-toast = "0.20.0"
 
 [target.'cfg(target_os = "windows")'.dependencies]
 capture-windows = { path = "../capture-windows" }
+windows = { version = "0.58.0", features = ["Win32_System_Performance"] }
 
 [target.'cfg(target_os = "linux")'.dependencies]
 capture-linux = { path = "../capture-linux" }
