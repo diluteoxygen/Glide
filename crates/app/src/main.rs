@@ -9,7 +9,7 @@ fn main() -> eframe::Result<()> {
         viewport: egui::ViewportBuilder::default()
             .with_title("Glide")
             .with_inner_size([600.0, 96.0])
-            .with_min_inner_size([420.0, 96.0])
+            .with_min_inner_size([600.0, 96.0])
             // Real OS decorations — no custom chrome, no transparency.
             // This design has no transparency requirement at all, so we
             // avoid the whole class of compositor/alpha bugs from the

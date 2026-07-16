@@ -37,6 +37,7 @@ pub struct GlideApp {
     last_sent_size: Option<egui::Vec2>,
     toasts: egui_toast::Toasts,
     tray_icon: Option<tray_icon::TrayIcon>,
+    pipeline: Option<crate::pipeline::PipelineHandle>,
 }
 
 impl Default for GlideApp {
@@ -56,6 +57,7 @@ impl Default for GlideApp {
                 .anchor(egui::Align2::RIGHT_BOTTOM, (-10.0, -10.0))
                 .direction(egui::Direction::BottomUp),
             tray_icon: None,
+            pipeline: None,
         }
     }
 }
@@ -80,10 +82,15 @@ impl eframe::App for GlideApp {
 
         // Handle Tray Icon Events
         if let Ok(event) = tray_icon::TrayIconEvent::receiver().try_recv() {
-            if let tray_icon::TrayIconEvent::Click { button: tray_icon::MouseButton::Left, button_state: tray_icon::MouseButtonState::Up, .. } = event {
+            if matches!(event, tray_icon::TrayIconEvent::Click { .. } | tray_icon::TrayIconEvent::DoubleClick { .. }) {
                 // Stop recording and restore window
                 self.is_recording = false;
                 self.recording_started_at = None;
+                
+                if let Some(pipeline) = self.pipeline.take() {
+                    pipeline.stop();
+                }
+
                 ctx.send_viewport_cmd(egui::ViewportCommand::Visible(true));
                 self.tray_icon = None; // Remove tray icon
                 
@@ -264,8 +271,25 @@ impl GlideApp {
                 if self.settings_open {
                     self.settings_open = false;
                 }
+                
+                let timestamp = chrono::Local::now().format("%Y%m%d_%H%M%S").to_string();
+                let output_file = format!("Glide_{}.mp4", timestamp);
+                let config = crate::pipeline::PipelineConfig {
+                    output_file,
+                    is_otf: self.mode == RecordMode::Live,
+                    no_overlay: false,
+                    record_system_audio: self.audio_state.record_system_audio,
+                    selected_mic: self.audio_state.selected_mic.clone(),
+                };
+                
+                if let Ok(handle) = crate::pipeline::PipelineHandle::start(config) {
+                    self.pipeline = Some(handle);
+                }
             } else {
                 self.recording_started_at = None;
+                if let Some(pipeline) = self.pipeline.take() {
+                    pipeline.stop();
+                }
                 self.toasts.add(egui_toast::Toast {
                     text: "Recording Saved".into(),
                     kind: egui_toast::ToastKind::Success,
